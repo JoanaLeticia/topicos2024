@@ -1,0 +1,35 @@
+package com.skinstore.dto;
+
+import java.math.BigDecimal;
+
+import com.skinstore.model.Arma;
+import com.skinstore.model.Disponibilidade;
+import com.skinstore.model.Exterior;
+import com.skinstore.model.Produto;
+import com.skinstore.model.Tipo;
+
+public record ProdutoResponseDTO(
+    Long id,
+    String nome,
+    String linkSteam,
+    BigDecimal valor,
+    Tipo tipo,
+    Arma arma,
+    Exterior exterior,
+    Float numeroFloat,
+    Integer pattern,
+    Disponibilidade disponibilidade
+) {
+    public static ProdutoResponseDTO valueOf(Produto produto) {
+        return new ProdutoResponseDTO(produto.getId(),
+        produto.getNome(),
+        produto.getLinkSteam(),
+        produto.getValor(),
+        produto.getTipo(),
+        produto.getArma(),
+        produto.getExterior(),
+        produto.getNumeroFloat(),
+        produto.getPattern(),
+        produto.getDisponibilidade());
+    }
+}
