@@ -17,6 +17,10 @@ public class Produto extends DefaultEntity {
     @Column
     private BigDecimal valor;
 
+    // Cada produto é único
+    @Column(columnDefinition = "INTEGER CHECK (quantEstoque >= 0)")
+    private Integer quantEstoque = 1;
+
     @Column
     @Enumerated(EnumType.STRING)
     private Tipo tipo;
@@ -61,6 +65,18 @@ public class Produto extends DefaultEntity {
 
     public void setValor(BigDecimal valor) {
         this.valor = valor;
+    }
+
+    public Integer getQuantEstoque() {
+        return quantEstoque;
+    }
+
+    public void setQuantEstoque(Integer quantEstoque) {
+        this.quantEstoque = quantEstoque;
+    }
+
+    public void setNumeroFloat(Float numeroFloat) {
+        this.numeroFloat = numeroFloat;
     }
 
     public Tipo getTipo() {

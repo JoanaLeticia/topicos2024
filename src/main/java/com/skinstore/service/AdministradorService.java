@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.skinstore.dto.AdministradorDTO;
 import com.skinstore.dto.AdministradorResponseDTO;
+import com.skinstore.dto.UsuarioResponseDTO;
 
 import jakarta.validation.Valid;
 
@@ -14,4 +15,5 @@ public interface AdministradorService {
     public AdministradorResponseDTO findById(Long id);
     public List<AdministradorResponseDTO> findAll();
     public List<AdministradorResponseDTO> findByNome(String nome);
+    public UsuarioResponseDTO login(String login, String senha);
 }

@@ -1,7 +1,7 @@
 package com.skinstore.resource;
 
-import com.skinstore.dto.UsuarioDTO;
-import com.skinstore.service.UsuarioService;
+import com.skinstore.dto.PessoaDTO;
+import com.skinstore.service.PessoaService;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -18,45 +18,44 @@ import jakarta.ws.rs.core.Response.Status;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Path("/usuarios")
-public class UsuarioResource {
+@Path("/pessoas")
+public class PessoaResource {
     @Inject
-    public UsuarioService usuarioService;
+    public PessoaService pessoaService;
 
     @GET
     @Path("/{id}")
     public Response findById(@PathParam("id") Long id) {
-        return Response.ok(usuarioService.findById(id)).build();
+        return Response.ok(pessoaService.findById(id)).build();
     }
 
     @GET
     public Response findAll() {
-        return Response.ok(usuarioService.findAll()).build();
+        return Response.ok(pessoaService.findAll()).build();
     }
 
     @GET
-    @Path("/search/login/{login}")
-    public Response findByLogin(@PathParam("login") String login) {
-        return Response.ok(usuarioService.findByLogin(login)).build();
+    @Path("/search/nome/{nome}")
+    public Response findByNome(@PathParam("nome") String nome) {
+        return Response.ok(pessoaService.findByNome(nome)).build();
     }
 
     @POST
-    public Response create(UsuarioDTO dto) {
-        return Response.status(Status.CREATED).entity(usuarioService.create(dto)).build();
+    public Response create(PessoaDTO dto) {
+        return Response.status(Status.CREATED).entity(pessoaService.create(dto)).build();
     }
 
     @PUT
     @Path("/{id}")
-    public Response update(@PathParam("id") Long  id, UsuarioDTO dto) {
-        usuarioService.update(id, dto);
+    public Response update(@PathParam("id") Long id, PessoaDTO dto) {
+        pessoaService.update(id, dto);
         return Response.status(Status.NO_CONTENT).build();
     }
 
     @DELETE
     @Path("/{id}")
     public Response delete(@PathParam("id") Long id) {
-        usuarioService.delete(id);
-        
+        pessoaService.delete(id);
         return Response.status(Status.NO_CONTENT).build();
     }
 }

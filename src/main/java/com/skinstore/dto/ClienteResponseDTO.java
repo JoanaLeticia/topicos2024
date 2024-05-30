@@ -8,21 +8,20 @@ public record ClienteResponseDTO (
     Long id,
     String nome,
     String login,
+    String senha,
     String cpf,
     List<TelefoneResponseDTO> telefones
 ) {
     public static ClienteResponseDTO valueOf(Cliente cliente) {
-        if (cliente == null) {
-            return new ClienteResponseDTO(null, null, null, null, null);
-        }
-        List<TelefoneResponseDTO> listaDeTelefones = cliente.getListaTelefone()
+        List<TelefoneResponseDTO> listaDeTelefones = cliente.getPessoa().getListaTelefone()
                                             .stream()
                                             .map(TelefoneResponseDTO::valueOf)
                                             .toList();
         return new ClienteResponseDTO(
             cliente.getId(),
-            cliente.getNome(),
-            cliente.getLogin(),
+            cliente.getPessoa().getNome(),
+            cliente.getPessoa().getUsuario().getLogin(),
+            cliente.getPessoa().getUsuario().getSenha(),
             cliente.getCpf(),
             listaDeTelefones);
     }

@@ -3,6 +3,7 @@ package com.skinstore.resource;
 import com.skinstore.dto.EstadoDTO;
 import com.skinstore.service.EstadoService;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -31,11 +32,13 @@ public class EstadoResource {
     }
 
     @GET
+    @RolesAllowed({"Administrador"})
     public Response findAll() {
         return Response.ok(estadoService.findAll()).build();
     }
 
     @GET
+    @RolesAllowed({"Administrador"})
     @Path("/search/nome/{nome}")
     public Response findByNome(@PathParam("nome") String nome) {
         return Response.ok(estadoService.findByNome(nome)).build();

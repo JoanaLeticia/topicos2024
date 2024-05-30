@@ -7,8 +7,12 @@ import com.skinstore.dto.ClienteDTO;
 import com.skinstore.dto.ClienteResponseDTO;
 import com.skinstore.dto.TelefoneDTO;
 import com.skinstore.model.Cliente;
+import com.skinstore.model.Pessoa;
 import com.skinstore.model.Telefone;
+import com.skinstore.model.Usuario;
 import com.skinstore.repository.ClienteRepository;
+import com.skinstore.repository.PessoaRepository;
+import com.skinstore.repository.UsuarioRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -20,22 +24,41 @@ public class ClienteServiceImpl implements ClienteService {
     @Inject
     public ClienteRepository clienteRepository;
 
+    @Inject
+    public PessoaRepository pessoaRepository;
+
+    @Inject
+    public UsuarioRepository usuarioRepository;
+
+    @Inject
+    public HashService hashService;
+
     @Override
     @Transactional
     public ClienteResponseDTO create(@Valid ClienteDTO dto) {
-        Cliente cliente = new Cliente();
-        cliente.setNome(dto.nome());
-        cliente.setCpf(dto.cpf());
-        cliente.setLogin(dto.login());
-        cliente.setSenha(dto.senha());
-        cliente.setListaTelefone(new ArrayList<Telefone>());
+        Usuario usuario = new Usuario();
+        usuario.setLogin(dto.login());
+        usuario.setSenha(hashService.getHashSenha(dto.senha()));
+
+        usuarioRepository.persist(usuario);
+
+        Pessoa pessoa = new Pessoa();
+        pessoa.setNome(dto.nome());
+        pessoa.setListaTelefone(new ArrayList<Telefone>());
+        pessoa.setUsuario(usuario);
 
         for (TelefoneDTO tel : dto.telefones()) {
             Telefone t = new Telefone();
             t.setCodigoArea(tel.codigoArea());
             t.setNumero(tel.numero());
-            cliente.getListaTelefone().add(t);
+            pessoa.getListaTelefone().add(t);
         }
+
+        pessoaRepository.persist(pessoa);
+
+        Cliente cliente = new Cliente();
+        cliente.setCpf(dto.cpf());
+        cliente.setPessoa(pessoa);
 
         clienteRepository.persist(cliente);
         return ClienteResponseDTO.valueOf(cliente);
@@ -46,17 +69,17 @@ public class ClienteServiceImpl implements ClienteService {
     public void update(Long id, ClienteDTO dto) {
         Cliente clienteUpdate = clienteRepository.findById(id);
 
-        clienteUpdate.setNome(dto.nome());
+        clienteUpdate.getPessoa().setNome(dto.nome());;
         clienteUpdate.setCpf(dto.cpf());
-        clienteUpdate.setLogin(dto.login());
-        clienteUpdate.setSenha(dto.senha());
-        clienteUpdate.getListaTelefone().clear();
+        clienteUpdate.getPessoa().getUsuario().setLogin(dto.login());
+        clienteUpdate.getPessoa().getUsuario().setSenha(dto.senha());
+        clienteUpdate.getPessoa().getListaTelefone().clear();
 
         for(TelefoneDTO tel : dto.telefones()) {
             Telefone t = new Telefone();
             t.setCodigoArea(tel.codigoArea());
             t.setNumero(tel.numero());
-            clienteUpdate.getListaTelefone().add(t);
+            clienteUpdate.getPessoa().getListaTelefone().add(t);
         }
     }
 

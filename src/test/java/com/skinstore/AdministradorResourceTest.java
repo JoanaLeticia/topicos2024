@@ -2,6 +2,7 @@ package com.skinstore;
 
 import org.junit.jupiter.api.Test;
 import com.skinstore.dto.AdministradorDTO;
+import com.skinstore.dto.TelefoneDTO;
 import com.skinstore.service.AdministradorService;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -12,6 +13,9 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @QuarkusTest
 public class AdministradorResourceTest {
@@ -63,8 +67,10 @@ public class AdministradorResourceTest {
 
     @Test
     public void updateTest() {
-        AdministradorDTO dto = new AdministradorDTO("Son Heung-min", 983129, "son@yahoo.com", "fda9213");
+        List<TelefoneDTO> listaTelefones = new ArrayList<TelefoneDTO>();
+        listaTelefones.add(new TelefoneDTO("63", "1234950"));
 
+        AdministradorDTO dto = new AdministradorDTO("null", 12345, "null", "null", listaTelefones);
         given()
             .contentType(MediaType.APPLICATION_JSON)
             .body(dto)

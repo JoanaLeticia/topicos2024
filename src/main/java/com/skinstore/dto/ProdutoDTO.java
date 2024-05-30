@@ -5,11 +5,6 @@ import java.math.BigDecimal;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import com.skinstore.model.Tipo;
-import com.skinstore.model.Arma;
-import com.skinstore.model.Exterior;
-import com.skinstore.model.Disponibilidade;
-
 public record ProdutoDTO (
     @NotBlank(message = "O campo nome não pode ser nulo.")
     String nome,
@@ -17,14 +12,16 @@ public record ProdutoDTO (
     String linkSteam,
     @NotNull(message = "O campo valor não pode ser nulo.")
     BigDecimal valor,
-    Tipo tipo,
-    Arma arma,
-    Exterior exterior,
-    @NotBlank(message = "O campo numero do float não pode ser nulo.")
+    @NotNull(message = "O campo quantidade não pode ser nulo.")
+    Integer quantEstoque,
+    Integer idTipo,
+    Integer idArma,
+    Integer idExterior,
+    @NotNull(message = "O campo numero do float não pode ser nulo.")
     Float numeroFloat,
-    @NotBlank(message = "O campo pattern não pode ser nulo.")
+    @NotNull(message = "O campo pattern não pode ser nulo.")
     Integer pattern,
-    Disponibilidade disponibilidade
+    Integer idDisponibilidade
 ) {
     
 }

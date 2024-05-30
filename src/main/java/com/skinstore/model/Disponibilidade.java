@@ -1,5 +1,8 @@
 package com.skinstore.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Disponibilidade {
     PRONTAENTREGA(1, "Pronta Entrega"),
     UM(2, "1 dia"),

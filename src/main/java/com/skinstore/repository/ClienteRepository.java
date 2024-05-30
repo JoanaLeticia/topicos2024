@@ -10,6 +10,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class ClienteRepository implements PanacheRepository<Cliente> {
     public List<Cliente> findByNome(String nome) {
-        return find("UPPER(nome) LIKE ?1", "%" + nome.toUpperCase() + "%").list();
+        return find("UPPER(pessoa.nome) LIKE ?1", "%" + nome.toUpperCase() + "%").list();
     }
 }

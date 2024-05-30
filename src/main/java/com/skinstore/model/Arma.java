@@ -1,5 +1,8 @@
 package com.skinstore.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Arma {
     AK47(1, "AK-47"),
     M4A4(2, "M4A4"),

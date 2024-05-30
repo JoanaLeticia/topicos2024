@@ -4,7 +4,11 @@ import java.util.List;
 
 import com.skinstore.dto.ProdutoDTO;
 import com.skinstore.dto.ProdutoResponseDTO;
+import com.skinstore.model.Arma;
+import com.skinstore.model.Disponibilidade;
+import com.skinstore.model.Exterior;
 import com.skinstore.model.Produto;
+import com.skinstore.model.Tipo;
 import com.skinstore.repository.ProdutoRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -24,12 +28,13 @@ public class ProdutoServiceImpl implements ProdutoService {
         produto.setNome(dto.nome());
         produto.setLinkSteam(dto.linkSteam());
         produto.setValor(dto.valor());
-        produto.setTipo(dto.tipo());
-        produto.setArma(dto.arma());
-        produto.setExterior(dto.exterior());
+        produto.setQuantEstoque(dto.quantEstoque());
+        produto.setTipo(Tipo.valueOf(dto.idTipo()));
+        produto.setArma(Arma.valueOf(dto.idArma()));
+        produto.setExterior(Exterior.valueOf(dto.idExterior()));
         produto.setNumeroFloat(dto.numeroFloat());
         produto.setPattern(dto.pattern());
-        produto.setDisponibilidade(dto.disponibilidade());
+        produto.setDisponibilidade(Disponibilidade.valueOf(dto.idDisponibilidade()));
 
         produtoRepository.persist(produto);
         return ProdutoResponseDTO.valueOf(produto);
@@ -43,12 +48,13 @@ public class ProdutoServiceImpl implements ProdutoService {
         produtoUpdate.setNome(dto.nome());
         produtoUpdate.setLinkSteam(dto.linkSteam());
         produtoUpdate.setValor(dto.valor());
-        produtoUpdate.setTipo(dto.tipo());
-        produtoUpdate.setArma(dto.arma());
-        produtoUpdate.setExterior(dto.exterior());
+        produtoUpdate.setQuantEstoque(dto.quantEstoque());
+        produtoUpdate.setTipo(Tipo.valueOf(dto.idTipo()));
+        produtoUpdate.setArma(Arma.valueOf(dto.idArma()));
+        produtoUpdate.setExterior(Exterior.valueOf(dto.idExterior()));
         produtoUpdate.setNumeroFloat(dto.numeroFloat());
         produtoUpdate.setPattern(dto.pattern());
-        produtoUpdate.setDisponibilidade(dto.disponibilidade());
+        produtoUpdate.setDisponibilidade(Disponibilidade.valueOf(dto.idDisponibilidade()));
     }
 
     @Override

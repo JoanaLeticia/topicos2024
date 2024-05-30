@@ -1,5 +1,8 @@
 package com.skinstore.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Exterior {
     FN(1, "Factory New"),
     MW(2, "Minimal Wear"),

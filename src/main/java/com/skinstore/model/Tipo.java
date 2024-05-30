@@ -1,5 +1,8 @@
 package com.skinstore.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Tipo {
     PISTOLA(1, "Pistola"),
     FACA(2, "Faca"),
