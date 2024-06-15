@@ -19,19 +19,22 @@ public record ProdutoResponseDTO(
     Exterior exterior,
     Float numeroFloat,
     Integer pattern,
-    Disponibilidade disponibilidade
+    Disponibilidade disponibilidade,
+    String nomeImagem
 ) {
     public static ProdutoResponseDTO valueOf(Produto produto) {
-        return new ProdutoResponseDTO(produto.getId(),
-        produto.getNome(),
-        produto.getLinkSteam(),
-        produto.getValor(),
-        produto.getQuantEstoque(),
-        produto.getTipo(),
-        produto.getArma(),
-        produto.getExterior(),
-        produto.getNumeroFloat(),
-        produto.getPattern(),
-        produto.getDisponibilidade());
+        return new ProdutoResponseDTO(
+            produto.getId(),
+            produto.getNome(),
+            produto.getLinkSteam(),
+            produto.getValor(),
+            produto.getQuantEstoque(),
+            produto.getTipo(),
+            produto.getArma(),
+            produto.getExterior(),
+            produto.getNumeroFloat(),
+            produto.getPattern(),
+            produto.getDisponibilidade(),
+            produto.getNomeImagem());
     }
 }

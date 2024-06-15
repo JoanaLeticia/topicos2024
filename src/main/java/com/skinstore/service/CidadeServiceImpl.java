@@ -12,66 +12,68 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
+import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
 public class CidadeServiceImpl implements CidadeService {
     @Inject
-    public CidadeRepository cidadeRepository;
+    CidadeRepository repository;
 
     @Inject
     EstadoRepository estadoRepository;
 
     @Override
     @Transactional
-    public CidadeResponseDTO create(@Valid CidadeDTO dto) {
-        Cidade novaCidade = new Cidade();
-        novaCidade.setNome(dto.nome());
-        novaCidade.setEstado(estadoRepository.findById(dto.idEstado()));
+    public CidadeResponseDTO insert(CidadeDTO dto) {
+        Cidade novoCidade = new Cidade();
+        novoCidade.setNome(dto.nome());
+        novoCidade.setEstado(estadoRepository.findById(dto.idEstado()));
 
-        cidadeRepository.persist(novaCidade);
-        return CidadeResponseDTO.valueOf(novaCidade);
+        repository.persist(novoCidade);
+
+        return CidadeResponseDTO.valueOf(novoCidade);
     }
 
     @Override
     @Transactional
-    public void update(Long id, CidadeDTO dto) {
-        Cidade cidadeUpdate = cidadeRepository.findById(id);
+    public CidadeResponseDTO update(CidadeDTO dto, Long id) {
 
-        if(cidadeUpdate == null) {
+        Cidade cidadeExistente = repository.findById(id);
+        if (cidadeExistente == null) {
             throw new EntityNotFoundException("Cidade com ID " + id + " não encontrada");
         }
-
-        cidadeUpdate.setNome(dto.nome());
-        cidadeUpdate.setEstado(estadoRepository.findById(dto.idEstado()));
-
+        cidadeExistente.setNome(dto.nome());
+        cidadeExistente.getEstado().setId(dto.idEstado());
+        repository.persist(cidadeExistente);
+        return CidadeResponseDTO.valueOf(cidadeExistente);
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        cidadeRepository.deleteById(id);
+        if (!repository.deleteById(id))
+            throw new NotFoundException();
     }
 
     @Override
     public CidadeResponseDTO findById(Long id) {
-        Cidade cidade = cidadeRepository.findById(id);
-        if (cidade != null)
-            return CidadeResponseDTO.valueOf(cidade);
-        return null;
-    }
-
-    @Override
-    public List<CidadeResponseDTO> findAll() {
-        return cidadeRepository
-                .listAll()
-                .stream()
-                .map(e -> CidadeResponseDTO.valueOf(e)).toList();
+        Cidade cidade = repository.findById(id);
+        if (cidade == null) {
+            throw new EntityNotFoundException("Cidade não encontrado com ID: " + id);
+        }
+        return CidadeResponseDTO.valueOf(cidade);
     }
 
     @Override
     public List<CidadeResponseDTO> findByNome(String nome) {
-        return cidadeRepository.findByNome(nome).stream()
+        return repository.findByNome(nome).stream()
                 .map(e -> CidadeResponseDTO.valueOf(e)).toList();
     }
+
+    @Override
+    public List<CidadeResponseDTO> findByAll() {
+        return repository.listAll().stream()
+                .map(e -> CidadeResponseDTO.valueOf(e)).toList();
+    }
+
 }

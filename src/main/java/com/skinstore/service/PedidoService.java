@@ -4,12 +4,15 @@ import java.util.List;
 
 import com.skinstore.dto.PedidoDTO;
 import com.skinstore.dto.PedidoResponseDTO;
-import jakarta.validation.Valid;
+import com.skinstore.model.Cliente;
+import com.skinstore.dto.ItemPedidoResponseDTO;
 
 public interface PedidoService {
-    public PedidoResponseDTO create(@Valid PedidoDTO dto);
+    public PedidoResponseDTO insert(PedidoDTO dto, String login);
     public void delete(Long id);
     public PedidoResponseDTO findById(Long id);
-    public List<PedidoResponseDTO> findAll();
-    public List<PedidoResponseDTO> findByCliente(Long idCliente);
+    public List<PedidoResponseDTO> findByAll();
+    public List<PedidoResponseDTO> findByAll(String login);
+    public List<PedidoResponseDTO> pedidosUsuarioLogado(Cliente cliente);
+    public List<ItemPedidoResponseDTO> findItensByUsuario(Cliente cliente);
 }

@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Perfil {
-    USER(1, "Cliente"),
+
+    CLIENTE(1, "Cliente"),
     ADMIN(2, "Admin");
 
     private final Integer id;
@@ -32,4 +33,5 @@ public enum Perfil {
         }
         throw new IllegalArgumentException("Id inválido" + id);
     }
+
 }

@@ -1,16 +1,21 @@
 package com.skinstore.dto;
 
-import java.util.List;
-
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
-public record AdministradorDTO (
-    @NotBlank(message = "Digite o seu nome.") String nome,
-    @NotNull(message = "Digite a sua inscrição") Integer inscricao,
-    @NotBlank(message = "Digite seu username.") String login,
-    @NotBlank(message = "Por favor, insira sua senha.") String senha,
-    List<TelefoneDTO> telefones
-) {
-    
+public record AdministradorDTO(
+        @NotBlank(message = "Digite o seu nome.")
+        String nome,
+        @NotBlank(message = "Digite o seu e-mail.")
+        @Email(message = "O e-mail fornecido não está formatado corretamente!")
+        String email,
+        @NotBlank(message = "Digite a senha.")
+        String senha,
+        @NotBlank(message = "Digite o seu CPF.")
+        @Pattern(regexp = "^(\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2})$", message = "CPF não está no formato correto!")
+        String cpf,
+        @NotNull(message = "Digite a sua matrícula.")
+        Integer matricula){
 }

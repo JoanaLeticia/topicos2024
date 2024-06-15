@@ -88,7 +88,7 @@ public class ProdutoResourceTest {
     public void deleteTest() {
         ProdutoDTO dto = new ProdutoDTO("MP9 | Pandora's Box", "https://steamcommunity.com/market/listings/730/MP9%20%7C%20Pandora%27s%20Box%20%28Field-Tested%29", BigDecimal.valueOf(717.71), Integer.valueOf(1), Integer.valueOf(6), Integer.valueOf(7), Integer.valueOf(3), 0.032142f, 112, Integer.valueOf(1));
 
-        ProdutoResponseDTO response = produtoService.create(dto);
+        ProdutoResponseDTO response = produtoService.insert(dto);
 
         given()
             .when()

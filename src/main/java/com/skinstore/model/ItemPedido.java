@@ -7,11 +7,16 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class ItemPedido extends DefaultEntity {
     private Double valor;
+    
     private Integer quantidade;
 
     @ManyToOne
     @JoinColumn(name = "id_produto")
     private Produto produto;
+
+    @ManyToOne
+    @JoinColumn(name = "id_pedido")
+    private Pedido pedido;
 
     public Double getValor() {
         return valor;
@@ -35,6 +40,14 @@ public class ItemPedido extends DefaultEntity {
 
     public void setProduto(Produto produto) {
         this.produto = produto;
+    }
+
+    public Pedido getPedido() {
+        return pedido;
+    }
+
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
     }
 
 }

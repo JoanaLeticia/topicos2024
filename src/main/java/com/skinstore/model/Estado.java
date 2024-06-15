@@ -3,9 +3,9 @@ package com.skinstore.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
+
 @Entity
 public class Estado extends DefaultEntity {
-
     @Column(length = 60)
     private String nome;
 
@@ -28,5 +28,8 @@ public class Estado extends DefaultEntity {
         this.sigla = sigla;
     }
 
+    public Object valueOf() {
+        return null;
+    } 
     
 }

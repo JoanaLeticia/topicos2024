@@ -43,6 +43,8 @@ public class Produto extends DefaultEntity {
     @Enumerated(EnumType.STRING)
     private Disponibilidade disponibilidade;
 
+    private String nomeImagem;
+
     public String getNome() {
         return nome;
     }
@@ -125,6 +127,14 @@ public class Produto extends DefaultEntity {
 
     public void setDisponibilidade(Disponibilidade disponibilidade) {
         this.disponibilidade = disponibilidade;
+    }
+
+    public String getNomeImagem() {
+        return nomeImagem;
+    }
+
+    public void setNomeImagem(String nomeImagem) {
+        this.nomeImagem = nomeImagem;
     }
 
 }

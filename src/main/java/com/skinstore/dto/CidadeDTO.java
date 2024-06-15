@@ -2,7 +2,6 @@ package com.skinstore.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.lang.Long;
 
 public record CidadeDTO(
     @NotBlank(message = "O campo nome não pode ser nulo.")

@@ -3,26 +3,32 @@ package com.skinstore.dto;
 import java.util.List;
 
 import com.skinstore.model.Cliente;
+import com.skinstore.model.Perfil;
 
-public record ClienteResponseDTO (
+public record ClienteResponseDTO(
     Long id,
     String nome,
-    String login,
-    String senha,
     String cpf,
-    List<TelefoneResponseDTO> telefones
-) {
-    public static ClienteResponseDTO valueOf(Cliente cliente) {
-        List<TelefoneResponseDTO> listaDeTelefones = cliente.getPessoa().getListaTelefone()
-                                            .stream()
-                                            .map(TelefoneResponseDTO::valueOf)
-                                            .toList();
+    String login,
+    Perfil perfil,
+    List<TelefoneResponseDTO> listaTelefone
+) { 
+    public static ClienteResponseDTO valueOf(Cliente cliente){
+        if (cliente == null) {
+            return new ClienteResponseDTO(null, null, null, null, null, null);
+        }
+
+        List<TelefoneResponseDTO> listaTelefones = cliente.getTelefones()
+                                                    .stream()
+                                                    .map(TelefoneResponseDTO::valueOf)
+                                                    .toList();
         return new ClienteResponseDTO(
-            cliente.getId(),
+            cliente.getId(), 
             cliente.getPessoa().getNome(),
+            cliente.getPessoa().getCpf(),
             cliente.getPessoa().getUsuario().getLogin(),
-            cliente.getPessoa().getUsuario().getSenha(),
-            cliente.getCpf(),
-            listaDeTelefones);
+            cliente.getPessoa().getUsuario().getPerfil(),
+            listaTelefones
+        );
     }
 }

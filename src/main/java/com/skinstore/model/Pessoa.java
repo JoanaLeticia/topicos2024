@@ -1,23 +1,20 @@
 package com.skinstore.model;
 
-import java.util.List;
-
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Pessoa extends DefaultEntity {
+    @Column(length = 60)
     private String nome;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "id_pessoa")
-    private List<Telefone> listaTelefone;
+    
+    @Column(length = 16)
+    private String cpf;
 
     @OneToOne
     @JoinColumn(name = "id_usuario", unique = true)
@@ -39,12 +36,12 @@ public class Pessoa extends DefaultEntity {
         this.nome = nome;
     }
 
-    public List<Telefone> getListaTelefone() {
-        return listaTelefone;
+    public String getCpf() {
+        return cpf;
     }
 
-    public void setListaTelefone(List<Telefone> listaTelefone) {
-        this.listaTelefone = listaTelefone;
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
 }

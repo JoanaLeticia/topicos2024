@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import jakarta.validation.ConstraintViolation;
 
 public class Result {
+
     private String message;
     private boolean success;
 
@@ -22,8 +23,8 @@ public class Result {
     public Result(Set<? extends ConstraintViolation<?>> violations) {
         this.success = false;
         this.message = violations.stream()
-                .map(cv -> cv.getMessage())
-                .collect(Collectors.joining(", "));
+             .map(cv -> cv.getMessage())
+             .collect(Collectors.joining(", "));
     }
 
     public String getMessage() {
@@ -33,4 +34,5 @@ public class Result {
     public boolean isSuccess() {
         return success;
     }
+
 }

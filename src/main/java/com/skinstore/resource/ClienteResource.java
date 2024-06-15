@@ -1,10 +1,17 @@
 package com.skinstore.resource;
 
+import org.jboss.logging.Logger;
+
+import com.skinstore.application.Result;
 import com.skinstore.dto.ClienteDTO;
+import com.skinstore.dto.ClienteResponseDTO;
 import com.skinstore.service.ClienteService;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -17,50 +24,97 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
+@Path("/clientes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Path("/clientes")
 public class ClienteResource {
-    
+
     @Inject
-    public ClienteService clienteService;
+    ClienteService service;
 
-    @GET
-    @Path("/{id}")
-    public Response findByiD(@PathParam("id") Long id) {
-        return Response.ok(clienteService.findById(id)).build();
-    }
-
-    @GET
-    public Response findAll() {
-        return Response.ok(clienteService.findAll()).build();
-    }
-
-    @GET
-    @Path("/search/nome/{nome}")
-    public Response findByNome(@PathParam("nome") String nome) {
-        return Response.ok(clienteService.findByNome(nome)).build();
-    }
+    private static final Logger LOG = Logger.getLogger(ClienteResource.class);
 
     @POST
-    @Transactional
-    public Response create(ClienteDTO clienteDTO) {
-        return Response.status(Status.CREATED).entity(clienteService.create(clienteDTO)).build();
+    @RolesAllowed({"Admin"})
+    public Response insert(ClienteDTO dto) throws Exception {
+        LOG.debug("Debug de inserção de clientes.");
+        try {
+            LOG.info("Inserindo cliente");
+            return Response.status(Status.CREATED).entity(service.insert(dto)).build();
+        } catch (ConstraintViolationException e) {
+            Result result = new Result(e.getConstraintViolations());
+            LOG.debug("Debug de inserção de clientes.");
+            return Response.status(Status.NOT_FOUND).entity(result).build();
+        }
+
     }
 
     @PUT
     @Transactional
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, ClienteDTO clienteDTO) {
-        clienteService.update(id, clienteDTO);
-        return Response.status(Status.NO_CONTENT).build();
+    @RolesAllowed({"Admin"})
+    public Response update(ClienteDTO dto, @PathParam("id") Long id) {
+        try {
+            LOG.info("Atualizando cliente");
+            service.update(dto, id);
+            return Response.noContent().build();
+        } catch (ConstraintViolationException e) {
+            Result result = new Result(e.getConstraintViolations());
+            LOG.debug("Debug da atualização de clientes.");
+            return Response.status(Status.NOT_FOUND).entity(result).build();
+        }
     }
 
     @DELETE
     @Transactional
     @Path("/{id}")
+    @RolesAllowed({"Admin"})
     public Response delete(@PathParam("id") Long id) {
-        clienteService.delete(id);
-        return Response.status(Status.NO_CONTENT).build();
+        try {
+            LOG.info("Deletando o cliente");
+            service.delete(id);
+            return Response.noContent().build();
+        } catch (ConstraintViolationException e) {
+            Result result = new Result(e.getConstraintViolations());
+            LOG.debug("Debug da exclusão do cliente.");
+            return Response.status(Status.NOT_FOUND).entity(result).build();
+        }
+    }
+
+    @GET
+    //@RolesAllowed({"Admin"})
+    public Response findAll() {
+        LOG.info("Buscando todos os clientes.");
+        LOG.debug("Debug de busca de lista de clientes.");
+        return Response.ok(service.findByAll()).build();
+    }
+
+    @GET
+    @Path("/{id}")
+    @RolesAllowed({"Admin"})
+    public Response findById(@PathParam("id") Long id) {
+        try {
+            ClienteResponseDTO a = service.findById(id);
+            LOG.info("Buscando um cliente por ID.");
+            LOG.debug("Debug de busca de ID de clientes.");
+            return Response.ok(a).build();
+        } catch (EntityNotFoundException e) {
+            LOG.info("Erro ao buscar um cliente por ID.");
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
+    }
+
+    @GET
+    @Path("/search/nome/{nome}")
+    @RolesAllowed({"Admin"})
+    public Response findByNome(@PathParam("nome") String nome) {
+        try {
+            LOG.info("Buscando um cliente por ID.");
+            LOG.debug("Debug de busca de ID de clientes.");
+            return Response.ok(service.findByNome(nome)).build();
+        } catch (EntityNotFoundException e) {
+            LOG.info("Erro ao buscar um cliente por ID.");
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
     }
 }

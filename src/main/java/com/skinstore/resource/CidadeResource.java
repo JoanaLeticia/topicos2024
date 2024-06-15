@@ -1,14 +1,17 @@
 package com.skinstore.resource;
 
-import java.util.List;
+import org.jboss.logging.Logger;
 
+import com.skinstore.application.Result;
 import com.skinstore.dto.CidadeDTO;
 import com.skinstore.dto.CidadeResponseDTO;
-import com.skinstore.model.Cidade;
-import com.skinstore.repository.CidadeRepository;
-import com.skinstore.repository.EstadoRepository;
+import com.skinstore.service.CidadeService;
+
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -18,63 +21,102 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 
+@Path("/cidades")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Path("/cidades")
 public class CidadeResource {
-    
     @Inject
-    public CidadeRepository cidadeRepository;
-    public EstadoRepository estadoRepository;
+    CidadeService service;
 
-    @GET
-    @Path("/{id}")
-    public CidadeResponseDTO findById(@PathParam("id") Long id) {
-        return CidadeResponseDTO.valueOf(cidadeRepository.findById(id));
-    }
-
-    @GET
-    public List<CidadeResponseDTO> findAll() {
-        return cidadeRepository
-            .listAll()
-            .stream()
-            .map(e -> CidadeResponseDTO.valueOf(e)).toList();
-    }
-
-    @GET
-    @Path("/search/nome/{nome}")
-    public List<CidadeResponseDTO> findByNome(@PathParam("nome") String nome) {
-        return cidadeRepository.findByNome(nome)
-        .stream()
-        .map(e -> CidadeResponseDTO.valueOf(e)).toList();
-    }
+    private static final Logger LOG = Logger.getLogger(CidadeResource.class);
 
     @POST
-    @Transactional
-    public CidadeResponseDTO create(CidadeDTO dto) {
-        Cidade cidade = new Cidade();
-        cidade.setNome(dto.nome());
-        cidade.setEstado(estadoRepository.findById(dto.idEstado()));
+    @RolesAllowed({"Admin"})
+    public Response insert(CidadeDTO dto) throws Exception {
+        LOG.debug("Debug de inserção de Cidade.");
+        try {
+            LOG.info("Inserindo Cidade");
+            return Response.status(Status.CREATED).entity(service.insert(dto)).build();
+        } catch (ConstraintViolationException e) {
+            Result result = new Result(e.getConstraintViolations());
+            LOG.error("Erro ao inserir um Cidade.");
+            LOG.debug("Debug de inserção de Cidade.");
+            return Response.status(Status.NOT_FOUND).entity(result).build();
+        }
 
-        cidadeRepository.persist(cidade);
-        return CidadeResponseDTO.valueOf(cidade);
     }
 
     @PUT
     @Transactional
     @Path("/{id}")
-    public void update(@PathParam("id") Long id, CidadeDTO dto) {
-        Cidade cidade = cidadeRepository.findById(id);
-
-        cidade.setNome(dto.nome());
-        cidade.setEstado(estadoRepository.findById(dto.idEstado()));
+    @RolesAllowed({"Admin"})
+    public Response update(CidadeDTO dto, @PathParam("id") Long id) {
+        try {
+            LOG.info("Atualizando Cidade");
+            service.update(dto, id);
+            return Response.noContent().build();
+        } catch (ConstraintViolationException e) {
+            Result result = new Result(e.getConstraintViolations());
+            LOG.error("Erro ao atualizar um Cidade.");
+            LOG.debug("Debug da atualização de Cidade.");
+            return Response.status(Status.NOT_FOUND).entity(result).build();
+        }
     }
 
     @DELETE
     @Transactional
     @Path("/{id}")
-    public void delete(@PathParam("id") Long id) {
-        cidadeRepository.deleteById(id);
+    @RolesAllowed({"Admin"})
+    public Response delete(@PathParam("id") Long id) {
+        try {
+            LOG.info("Deletando o Cidade");
+            service.delete(id);
+            return Response.noContent().build();
+        } catch (ConstraintViolationException e) {
+            Result result = new Result(e.getConstraintViolations());
+            LOG.error("Erro ao deletar um Cidade.");
+            LOG.debug("Debug da exclusão do Cidade.");
+            return Response.status(Status.NOT_FOUND).entity(result).build();
+        }
+    }
+
+    @GET
+    @RolesAllowed({"Admin"})
+    public Response findAll() {
+        LOG.info("Buscando todos os Cidade.");
+        LOG.debug("Debug de busca de lista de Cidade.");
+        return Response.ok(service.findByAll()).build();
+    }
+
+    @GET
+    @Path("/{id}")
+    @RolesAllowed({"Admin"})
+    public Response findById(@PathParam("id") Long id) {
+        try {
+            CidadeResponseDTO a = service.findById(id);
+            LOG.info("Buscando um Cidade por ID.");
+            LOG.debug("Debug de busca de ID de Cidade.");
+            return Response.ok(a).build();
+        } catch (EntityNotFoundException e) {
+            LOG.error("Erro ao buscar um Cidade por ID.");
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
+    }
+
+    @GET
+    @Path("/search/nome/{nome}")
+    @RolesAllowed({"Admin"})
+    public Response findByNome(@PathParam("nome") String nome) {
+        try {
+            LOG.info("Buscando Cidade pelo nome.");
+            LOG.debug("Debug de busca de Cidade pelo nome.");
+            return Response.ok(service.findByNome(nome)).build();
+        } catch (EntityNotFoundException e) {
+            LOG.error("Erro ao buscar Cidade pelo nome.");
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
     }
 }

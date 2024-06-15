@@ -1,93 +1,180 @@
 package com.skinstore;
 
-import org.junit.jupiter.api.Test;
-import com.skinstore.dto.AdministradorDTO;
-import com.skinstore.dto.TelefoneDTO;
-import com.skinstore.service.AdministradorService;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.core.MediaType;
-import static io.restassured.RestAssured.given;
 
+import org.junit.jupiter.api.Test;
+
+import com.skinstore.dto.AdministradorDTO;
+import com.skinstore.dto.AdministradorResponseDTO;
+import com.skinstore.dto.LoginDTO;
+import com.skinstore.service.AdministradorService;
+
+import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.everyItem;
-import static org.hamcrest.Matchers.hasItem;
 
-import java.util.ArrayList;
-import java.util.List;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @QuarkusTest
 public class AdministradorResourceTest {
     @Inject
-    public AdministradorService admService;
+    AdministradorService administradorService;
 
+    private String token;
+    @BeforeEach
+    public void setUp() {
+        var auth = new LoginDTO("victor@unitins.br", "123");
+
+        Response response = (Response) given()
+                .contentType("application/json")
+                .body(auth)
+                .when().post("/auth")
+                .then()
+                .statusCode(200)
+                .extract().response();
+
+        token = response.header("Authorization");
+    }
     @Test
-    public void findAllTest() {
+    public void testFindAll() {
         given()
-            .when()
-            .get("/admins")
-            .then()
-            .statusCode(200)
-            .body("nome", hasItem(is("Luis Victor")));
+        .header("Authorization", "Bearer " + token)
+                .when().get("/administradores")
+                .then()
+                .statusCode(200);
     }
 
     @Test
-    public void findByIdTest() {
+    public void testInsert() {
+        AdministradorDTO dtoAdministrador = new AdministradorDTO(
+                "Milly Melo",
+                "milly@gmail.com",
+                "15987",
+                "159.684.456-02",
+                951);
+
         given()
-            .when()
-            .get("/admins/2")
-            .then()
-            .statusCode(200)
-            .body("id", is(2));
+        .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(dtoAdministrador)
+                .when().post("/administradores")
+                .then()
+                .statusCode(201)
+                .body(
+                        "id", notNullValue(),
+                        "nome", is("Milly Melo"),
+                        "matricula", equalTo(951));
     }
 
     @Test
-    public void findByNomeTest() {
+    public void testUpdate() {
+        AdministradorDTO dto = new AdministradorDTO(
+                "Milly Melo",
+                "milly@gmail.com",
+                "15987",
+                "159.684.456-02",
+                951);
+
+        // inserindo um usuario
+        AdministradorResponseDTO usuarioTest = administradorService.insert(dto);
+        Long id = usuarioTest.id();
+
+        AdministradorDTO dtoUpdate = new AdministradorDTO(
+                "Milly Melo",
+                "melo@gmail.com",
+                "15987",
+                "159.684.456-02",
+                100);
+
         given()
-            .when()
-            .get("/admins/search/nome/Luis")
-            .then()
-            .statusCode(200)
-            .body("nome", everyItem(is("Luis Victor")));
-    }
+        .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(dtoUpdate)
+                .when().put("/administradores/" + id)
+                .then()
+                .statusCode(204);
 
-    /*@Test
-    public void createTest() {
-        AdministradorDTO dto = new AdministradorDTO("teste", 123, "teste@teste", "32123");
+        AdministradorResponseDTO usu = administradorService.findById(id);
+        assertThat(usu.nome(), is("Milly Melo"));
+        assertThat(usu.matricula(), equalTo(100));
 
-        given()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(dto)
-            .when()
-            .post("/admins")
-            .then()
-            .statusCode(201);
-    }*/
-
-    @Test
-    public void updateTest() {
-        List<TelefoneDTO> listaTelefones = new ArrayList<TelefoneDTO>();
-        listaTelefones.add(new TelefoneDTO("63", "1234950"));
-
-        AdministradorDTO dto = new AdministradorDTO("null", 12345, "null", "null", listaTelefones);
-        given()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(dto)
-            .when()
-            .pathParam("id", 1)
-            .put("/admins/{id}")
-            .then()
-            .statusCode(204);
     }
 
     @Test
-    public void deleteTest() {
+    public void testRemoveAdministrador() {
+        AdministradorDTO dto = new AdministradorDTO(
+                "Milly Melo",
+                "milly@gmail.com",
+                "15987",
+                "159.684.456-02",
+                951);
+
+        AdministradorResponseDTO administradorInserido = administradorService.insert(dto);
+        Long idAdministrador = administradorInserido.id();
 
         given()
-            .when()
-            .delete("/admins/2")
-            .then()
-            .statusCode(204);
+        .header("Authorization", "Bearer " + token)
+                .when()
+                .delete("/administradores/" + idAdministrador)
+                .then()
+                .statusCode(204); // O código 204 indica que a remoção foi bem-sucedida
+
+        given()
+        .header("Authorization", "Bearer " + token)
+                .when()
+                .get("/administradores/" + idAdministrador)
+                .then()
+                .statusCode(404); // O código 404 indica que o administrador não foi encontrado (foi removido com
+                                  // sucesso)
     }
+
+    @Test
+    public void testFindById() {
+        AdministradorDTO dto = new AdministradorDTO(
+                "Milly Melo",
+                "milly@gmail.com",
+                "15987",
+                "159.684.456-02",
+                951);
+
+        // Inserindo um usuário
+        AdministradorResponseDTO usuarioTest = administradorService.insert(dto);
+        Long id = usuarioTest.id();
+
+        given()
+        .header("Authorization", "Bearer " + token)
+                .when().get("/administradores/{id}", id)
+                .then()
+                .statusCode(200)
+                .body("id", equalTo(id.intValue()));
+    }
+
+    @Test
+    public void testFindByIdNotFound() {
+        Long idNaoExistente = 9999L;
+
+        given()
+        .header("Authorization", "Bearer " + token)
+                .when().get("/administradores/{id}", idNaoExistente)
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    public void testFindByNome() {
+        String nomeExistente = "Victor Alves";
+
+        given()
+        .header("Authorization", "Bearer " + token)
+                .when().get("/administradores/search/nome/{nome}", nomeExistente)
+                .then()
+                .statusCode(200)
+                .body("nome[0]", equalTo(nomeExistente));
+    }
+
 }

@@ -3,64 +3,82 @@ package com.skinstore.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.skinstore.dto.ItemPedidoDTO;
+import com.skinstore.dto.ItemPedidoResponseDTO;
 import com.skinstore.dto.PedidoDTO;
 import com.skinstore.dto.PedidoResponseDTO;
+import com.skinstore.model.Cliente;
+import com.skinstore.model.Endereco;
 import com.skinstore.model.ItemPedido;
 import com.skinstore.model.Pedido;
 import com.skinstore.model.Produto;
 import com.skinstore.repository.ClienteRepository;
+import com.skinstore.repository.EnderecoRepository;
+import com.skinstore.repository.ItemPedidoRepository;
+import com.skinstore.repository.PagamentoRepository;
 import com.skinstore.repository.PedidoRepository;
 import com.skinstore.repository.ProdutoRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
 public class PedidoServiceImpl implements PedidoService {
     @Inject
-    public PedidoRepository pedidoRepository;
+    ProdutoRepository produtoRepository;
 
     @Inject
-    public ProdutoRepository produtoRepository;
+    ClienteRepository clienteRepository;
 
     @Inject
-    public ClienteRepository clienteRepository;
+    ItemPedidoRepository itemPedidoRepository;
+
+    @Inject
+    PedidoRepository pedidoRepository;
+
+    @Inject
+    EnderecoRepository enderecoRepository;
+
+    @Inject
+    PagamentoRepository pagamentoRepository;
 
     @Override
     @Transactional
-    public PedidoResponseDTO create(@Valid PedidoDTO dto) {
+    public PedidoResponseDTO insert(PedidoDTO dto, String login) {
         Pedido pedido = new Pedido();
-        pedido.setData(LocalDateTime.now());
-        Double total = 0.0;
-        for (ItemPedidoDTO itemPedidoDTO : dto.itens()) {
-            total += (itemPedidoDTO.valor() * itemPedidoDTO.quantidade());
-        }
-        pedido.setTotal(total);
+        pedido.setDataHora(LocalDateTime.now());
 
-        List<ItemPedido> itens = new ArrayList<ItemPedido>();
-        for (ItemPedidoDTO itemPedidoDTO : dto.itens()) {
+        Double total = 0.0;
+        for (ItemPedidoDTO itemDTO : dto.itens()) {
+            total += (itemDTO.valor() * itemDTO.quantidade());
+        }
+        pedido.setValorTotal(total);
+
+        pedido.setItens(new ArrayList<ItemPedido>());
+        for (ItemPedidoDTO itemDTO : dto.itens()) {
             ItemPedido item = new ItemPedido();
-            item.setQuantidade(itemPedidoDTO.quantidade());
-            Produto produto = produtoRepository.findById(itemPedidoDTO.idProduto());
-            if (produto == null) {
-                throw new IllegalArgumentException("Não foi possível encontrar esse produto.");
+            item.setValor(itemDTO.valor());
+            item.setQuantidade(itemDTO.quantidade());
+            Produto produto = produtoRepository.findById(itemDTO.idProduto());
+            if (produto == null){
+                throw new IllegalArgumentException("Não existe esse produto!");
             }
-            item.setValor(produto.getValor().doubleValue());
             item.setProduto(produto);
 
-            itens.add(item);
+            // atualizado o estoque
+            produto.setQuantEstoque(produto.getQuantEstoque() - item.getQuantidade());
 
-            // Atualizando estoque
-            produto.setQuantEstoque(produto.getQuantEstoque() - 1);
+            pedido.getItens().add(item);
         }
+        
+        Endereco endereco = enderecoRepository.findById(dto.idEndereco());
+        pedido.setEndereco(endereco);
 
-        pedido.setItens(itens);
-        pedido.setCliente(clienteRepository.findById(dto.idCliente()));
+        pedido.setCliente((Cliente) clienteRepository.findByLogin(login));
 
         pedidoRepository.persist(pedido);
 
@@ -69,23 +87,19 @@ public class PedidoServiceImpl implements PedidoService {
 
     @Override
     public PedidoResponseDTO findById(Long id) {
-        Pedido pedido = pedidoRepository.findById(id);
-        if (pedido != null)
-            return PedidoResponseDTO.valueOf(pedido);
-        return null;
+        return PedidoResponseDTO.valueOf(pedidoRepository.findById(id));
     }
 
     @Override
-    public List<PedidoResponseDTO> findAll() {
-        return pedidoRepository.listAll()
-                            .stream()
-                            .map(e -> PedidoResponseDTO.valueOf(e)).toList();
+    public List<PedidoResponseDTO> findByAll() {
+        return pedidoRepository.listAll().stream()
+                .map(e -> PedidoResponseDTO.valueOf(e)).toList();
     }
 
     @Override
-    public List<PedidoResponseDTO> findByCliente (Long idCliente) {
-        return pedidoRepository.findByCliente(idCliente).stream()
-        .map(e -> PedidoResponseDTO.valueOf(e)).toList();
+    public List<PedidoResponseDTO> findByAll(String login) {
+        return pedidoRepository.listAll().stream()
+                .map(e -> PedidoResponseDTO.valueOf(e)).toList();
     }
 
     @Override
@@ -95,6 +109,30 @@ public class PedidoServiceImpl implements PedidoService {
             throw new NotFoundException();
         }
 
+        for (ItemPedido item : pedido.getItens()) {
+            itemPedidoRepository.delete(item);
+        }
+
         pedidoRepository.delete(pedido);
+    }
+
+    @Override
+    public List<PedidoResponseDTO> pedidosUsuarioLogado(Cliente cliente) {
+        Cliente usuario = clienteRepository.findByLogin(cliente.getPessoa().getUsuario().getLogin());
+        List<Pedido> pedidos = pedidoRepository.findByUsuario(usuario);
+        return pedidos.stream().map(p -> PedidoResponseDTO.valueOf(p)).collect(Collectors.toList());
+    }
+
+    public List<ItemPedidoResponseDTO> findItensByUsuario(Cliente cliente) {
+        List<Pedido> pedidos = pedidoRepository.findByUsuario(cliente);
+        List<ItemPedido> itens = new ArrayList<>();
+    
+        for (Pedido pedido : pedidos) {
+            itens.addAll(pedido.getItens());
+        }
+    
+        return itens.stream()
+                .map(i -> ItemPedidoResponseDTO.valueOf(i))
+                .collect(Collectors.toList());
     }
 }

@@ -9,29 +9,11 @@ import jakarta.persistence.OneToOne;
 public class Administrador extends DefaultEntity {
 
     @Column(length = 10)
-    private Integer inscricao;
+    private Integer matricula;
 
     @OneToOne
     @JoinColumn(name = "id_pessoa", unique = true)
     private Pessoa pessoa;
-
-    private String nomeImagem;
-
-    public String getNomeImagem() {
-        return nomeImagem;
-    }
-
-    public void setNomeImagem(String nomeImagem) {
-        this.nomeImagem = nomeImagem;
-    }
-
-    public Integer getInscricao() {
-        return inscricao;
-    }
-
-    public void setInscricao(Integer inscricao) {
-        this.inscricao = inscricao;
-    }
 
     public Pessoa getPessoa() {
         return pessoa;
@@ -39,6 +21,14 @@ public class Administrador extends DefaultEntity {
 
     public void setPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;
+    }
+
+    public Integer getMatricula() {
+        return matricula;
+    }
+
+    public void setMatricula(Integer matricula) {
+        this.matricula = matricula;
     }
 
 }

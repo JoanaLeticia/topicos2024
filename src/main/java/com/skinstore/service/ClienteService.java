@@ -5,13 +5,11 @@ import java.util.List;
 import com.skinstore.dto.ClienteDTO;
 import com.skinstore.dto.ClienteResponseDTO;
 
-import jakarta.validation.Valid;
-
 public interface ClienteService {
-    public ClienteResponseDTO create(@Valid ClienteDTO dto);
-    public void update(Long id, ClienteDTO dto);
+    public ClienteResponseDTO insert(ClienteDTO dto) throws Exception;
+    public ClienteResponseDTO update(ClienteDTO dto, Long id);
     public void delete(Long id);
     public ClienteResponseDTO findById(Long id);
-    public List<ClienteResponseDTO> findAll();
     public List<ClienteResponseDTO> findByNome(String nome);
+    public List<ClienteResponseDTO> findByAll(); 
 }

@@ -1,120 +1,90 @@
 package com.skinstore.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.skinstore.dto.AdministradorDTO;
 import com.skinstore.dto.AdministradorResponseDTO;
-import com.skinstore.dto.TelefoneDTO;
-import com.skinstore.dto.UsuarioResponseDTO;
 import com.skinstore.model.Administrador;
+import com.skinstore.model.Perfil;
 import com.skinstore.model.Pessoa;
-import com.skinstore.model.Telefone;
 import com.skinstore.model.Usuario;
 import com.skinstore.repository.AdministradorRepository;
-import com.skinstore.repository.PessoaRepository;
-import com.skinstore.repository.UsuarioRepository;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
+import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
 public class AdministradorServiceImpl implements AdministradorService {
-    @Inject
-    public AdministradorRepository administradorRepository;
 
     @Inject
-    public PessoaRepository pessoaRepository;
-
-    @Inject
-    public UsuarioRepository usuarioRepository;
-
-    @Inject
-    public HashService hashService;
+    AdministradorRepository repository;
 
     @Override
     @Transactional
-    public AdministradorResponseDTO create(@Valid AdministradorDTO dto) {
-        Usuario usuario = new Usuario();
-        usuario.setLogin(dto.login());
-        usuario.setSenha(hashService.getHashSenha(dto.senha()));
+    public AdministradorResponseDTO insert(AdministradorDTO dto) {
 
-        usuarioRepository.persist(usuario);
+        Usuario usuario = new Usuario();
+        usuario.setLogin(dto.email());
+        usuario.setSenha(dto.senha());
+        usuario.setPerfil(Perfil.ADMIN);
 
         Pessoa pessoa = new Pessoa();
+        pessoa.setCpf(dto.cpf());
         pessoa.setNome(dto.nome());
-        pessoa.setListaTelefone(new ArrayList<Telefone>());
-        pessoa.setUsuario(usuario);
-
-        for (TelefoneDTO tel : dto.telefones()) {
-            Telefone t = new Telefone();
-            t.setCodigoArea(tel.codigoArea());
-            t.setNumero(tel.numero());
-            pessoa.getListaTelefone().add(t);
-        }
-
-        pessoaRepository.persist(pessoa);
 
         Administrador administrador = new Administrador();
-        administrador.setInscricao(dto.inscricao());
+        administrador.setMatricula(dto.matricula());
         administrador.setPessoa(pessoa);
 
-        administradorRepository.persist(administrador);
+        repository.persist(administrador);
+
         return AdministradorResponseDTO.valueOf(administrador);
     }
 
     @Override
     @Transactional
-    public void update(Long id, AdministradorDTO dto) {
-        Administrador admUpdate = administradorRepository.findById(id);
+    public AdministradorResponseDTO update(AdministradorDTO dto, Long id) {
 
-        admUpdate.getPessoa().setNome(dto.nome());;
-        admUpdate.setInscricao(dto.inscricao());
-        admUpdate.getPessoa().getUsuario().setLogin(dto.login());
-        admUpdate.getPessoa().getUsuario().setSenha(dto.senha());
-        admUpdate.getPessoa().getListaTelefone().clear();
+        Administrador administradorAtt = repository.findById(id);
 
-        for(TelefoneDTO tel : dto.telefones()) {
-            Telefone t = new Telefone();
-            t.setCodigoArea(tel.codigoArea());
-            t.setNumero(tel.numero());
-            admUpdate.getPessoa().getListaTelefone().add(t);
-        }
+        administradorAtt.setMatricula(dto.matricula());
+        administradorAtt.getPessoa().setCpf(dto.cpf());
+        administradorAtt.getPessoa().setNome(dto.nome());
+        administradorAtt.getPessoa().getUsuario().setLogin(dto.email());
+        administradorAtt.getPessoa().getUsuario().setSenha(dto.senha());
+        administradorAtt.getPessoa().getUsuario().setPerfil(Perfil.ADMIN);
+
+        return AdministradorResponseDTO.valueOf(administradorAtt);
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        administradorRepository.deleteById(id);
+        if (!repository.deleteById(id))
+            throw new NotFoundException();
     }
 
     @Override
     public AdministradorResponseDTO findById(Long id) {
-        Administrador adm = administradorRepository.findById(id);
-        if (adm != null)
-            return AdministradorResponseDTO.valueOf(adm);
-        return null;
-    }
-
-    @Override
-    public List<AdministradorResponseDTO> findAll() {
-        return administradorRepository
-                .listAll()
-                .stream()
-                .map(e -> AdministradorResponseDTO.valueOf(e)).toList();
+        Administrador administrador = repository.findById(id);
+        if (administrador == null) {
+            throw new EntityNotFoundException("Administrador não encontrado com ID: " + id);
+        }
+        return AdministradorResponseDTO.valueOf(administrador);
     }
 
     @Override
     public List<AdministradorResponseDTO> findByNome(String nome) {
-        return administradorRepository.findByNome(nome).stream()
+        return repository.findByNome(nome).stream()
                 .map(e -> AdministradorResponseDTO.valueOf(e)).toList();
     }
 
-    public UsuarioResponseDTO login(String login, String senha) {
-        Administrador adm = administradorRepository.findByLoginAndSenha(login, senha);
-        return UsuarioResponseDTO.valueOf(adm.getPessoa());
+    @Override
+    public List<AdministradorResponseDTO> findByAll() {
+        return repository.listAll().stream()
+                .map(e -> AdministradorResponseDTO.valueOf(e)).toList();
     }
 
 }

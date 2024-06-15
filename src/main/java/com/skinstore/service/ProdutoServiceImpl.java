@@ -13,17 +13,19 @@ import com.skinstore.repository.ProdutoRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
+import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
 public class ProdutoServiceImpl implements ProdutoService {
     @Inject
-    public ProdutoRepository produtoRepository;
+    ProdutoRepository repository;
 
     @Override
     @Transactional
-    public ProdutoResponseDTO create(@Valid ProdutoDTO dto) {
+    public ProdutoResponseDTO insert(ProdutoDTO dto) {
+
         Produto produto = new Produto();
         produto.setNome(dto.nome());
         produto.setLinkSteam(dto.linkSteam());
@@ -36,15 +38,15 @@ public class ProdutoServiceImpl implements ProdutoService {
         produto.setPattern(dto.pattern());
         produto.setDisponibilidade(Disponibilidade.valueOf(dto.idDisponibilidade()));
 
-        produtoRepository.persist(produto);
+        repository.persist(produto);
+
         return ProdutoResponseDTO.valueOf(produto);
     }
 
     @Override
     @Transactional
-    public void update(Long id, ProdutoDTO dto) {
-        Produto produtoUpdate = produtoRepository.findById(id);
-
+    public ProdutoResponseDTO update(ProdutoDTO dto, Long id) {
+        Produto produtoUpdate = repository.findById(id);
         produtoUpdate.setNome(dto.nome());
         produtoUpdate.setLinkSteam(dto.linkSteam());
         produtoUpdate.setValor(dto.valor());
@@ -55,33 +57,41 @@ public class ProdutoServiceImpl implements ProdutoService {
         produtoUpdate.setNumeroFloat(dto.numeroFloat());
         produtoUpdate.setPattern(dto.pattern());
         produtoUpdate.setDisponibilidade(Disponibilidade.valueOf(dto.idDisponibilidade()));
+
+        return ProdutoResponseDTO.valueOf(produtoUpdate);
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        produtoRepository.deleteById(id);
+        if (!repository.deleteById(id))
+            throw new NotFoundException();
     }
 
     @Override
     public ProdutoResponseDTO findById(Long id) {
-        Produto produto = produtoRepository.findById(id);
-        if (produto != null)
-            return ProdutoResponseDTO.valueOf(produto);
-        return null;
-    }
-
-    @Override
-    public List<ProdutoResponseDTO> findAll() {
-        return produtoRepository
-                .listAll()
-                .stream()
-                .map(e -> ProdutoResponseDTO.valueOf(e)).toList();
+        Produto produto = repository.findById(id);
+        if (produto == null) {
+            throw new EntityNotFoundException("Produto não encontrado com ID: " + id);
+        }
+        return ProdutoResponseDTO.valueOf(produto);
     }
 
     @Override
     public List<ProdutoResponseDTO> findByNome(String nome) {
-        return produtoRepository.findByNome(nome).stream()
+        return repository.findByNome(nome).stream()
                 .map(e -> ProdutoResponseDTO.valueOf(e)).toList();
     }
+
+    @Override
+    public List<ProdutoResponseDTO> findByAll() {
+        return repository.listAll().stream()
+                .map(e -> ProdutoResponseDTO.valueOf(e)).toList();
+    }
+
+    @Override
+    public ProdutoResponseDTO updateNomeImagem(Long id, String nomeImagem) {
+        Produto produto = repository.findById(id);
+        produto.setNomeImagem(nomeImagem);
+        return ProdutoResponseDTO.valueOf(produto);}
 }

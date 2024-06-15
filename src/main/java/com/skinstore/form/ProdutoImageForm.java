@@ -3,11 +3,9 @@ package com.skinstore.form;
 import org.jboss.resteasy.annotations.providers.multipart.PartType;
 
 import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.core.MediaType;
 
-public class ImageForm {
+public class ProdutoImageForm {
     @FormParam("nomeImagem")
-    @PartType(MediaType.TEXT_PLAIN)
     private String nomeImagem;
 
     @FormParam("imagem")
@@ -29,5 +27,4 @@ public class ImageForm {
     public void setImagem(byte[] imagem) {
         this.imagem = imagem;
     }
-
 }

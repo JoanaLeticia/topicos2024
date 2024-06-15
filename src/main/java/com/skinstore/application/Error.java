@@ -1,6 +1,7 @@
 package com.skinstore.application;
 
 public class Error {
+
     private String code;
     private String message;
 

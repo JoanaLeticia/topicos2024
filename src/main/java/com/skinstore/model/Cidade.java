@@ -7,19 +7,12 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Cidade extends DefaultEntity {
-    @Column(name = "nome", nullable = false, length = 60)
+    @Column(name = "nome", nullable = false, length = 255)
     private String nome;
+    
     @ManyToOne
     @JoinColumn(name = "id_estado")
     private Estado estado;
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
 
     public Estado getEstado() {
         return estado;
@@ -27,6 +20,14 @@ public class Cidade extends DefaultEntity {
 
     public void setEstado(Estado estado) {
         this.estado = estado;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
 }
