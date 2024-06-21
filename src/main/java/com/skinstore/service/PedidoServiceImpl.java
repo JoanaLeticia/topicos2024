@@ -63,8 +63,9 @@ public class PedidoServiceImpl implements PedidoService {
             ItemPedido item = new ItemPedido();
             item.setValor(itemDTO.valor());
             item.setQuantidade(itemDTO.quantidade());
+            item.setPedido(pedido);
             Produto produto = produtoRepository.findById(itemDTO.idProduto());
-            if (produto == null){
+            if (produto == null) {
                 throw new IllegalArgumentException("Não existe esse produto!");
             }
             item.setProduto(produto);
@@ -123,6 +124,7 @@ public class PedidoServiceImpl implements PedidoService {
         return pedidos.stream().map(p -> PedidoResponseDTO.valueOf(p)).collect(Collectors.toList());
     }
 
+    @Override
     public List<ItemPedidoResponseDTO> findItensByUsuario(Cliente cliente) {
         List<Pedido> pedidos = pedidoRepository.findByUsuario(cliente);
         List<ItemPedido> itens = new ArrayList<>();

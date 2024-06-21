@@ -12,7 +12,6 @@ import com.skinstore.dto.ProdutoResponseDTO;
 import com.skinstore.form.ProdutoImageForm;
 import com.skinstore.service.ProdutoFileService;
 import com.skinstore.service.ProdutoService;
-import com.skinstore.service.UsuarioService;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -44,9 +43,6 @@ public class ProdutoResource {
 
     @Inject
     ProdutoFileService fileService;
-
-    @Inject
-    UsuarioService usuarioService;
 
     private static final Logger LOG = Logger.getLogger(ProdutoResource.class);
 
@@ -98,7 +94,7 @@ public class ProdutoResource {
     }
 
     @GET
-    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin", "Cliente"})
     public Response findAll() {
         LOG.info("Buscando todos os Produto.");
         LOG.debug("Debug de busca de lista de Produto.");
@@ -107,7 +103,7 @@ public class ProdutoResource {
 
     @GET
     @Path("/{id}")
-    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin", "Cliente"})
     public Response findById(@PathParam("id") Long id) {
         try {
             ProdutoResponseDTO a = service.findById(id);
@@ -122,7 +118,7 @@ public class ProdutoResource {
 
     @GET
     @Path("/search/nome/{nome}")
-    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin", "Cliente"})
     public Response findByNome(@PathParam("nome") String nome) {
         try {
             LOG.info("Buscando um Produto pelo nome.");

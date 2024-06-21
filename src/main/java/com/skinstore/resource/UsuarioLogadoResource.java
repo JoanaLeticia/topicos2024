@@ -16,12 +16,9 @@ import com.skinstore.service.UsuarioService;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -38,9 +35,6 @@ public class UsuarioLogadoResource {
     UsuarioRepository repository;
 
     @Inject
-    UsuarioService usuarioService;
-
-    @Inject
     PedidoService pedidoService;
 
     @Inject
@@ -49,9 +43,12 @@ public class UsuarioLogadoResource {
     @Inject
     ClienteRepository clienteRepository;
 
+    @Inject
+    UsuarioService usuarioService;
+
     private static final Logger LOG = Logger.getLogger(UsuarioLogadoResource.class);
 
-    @GET
+    /*@GET
     @RolesAllowed({ "Cliente", "Admin" })
     public Response getUsuario() {
         // obtendo o login pelo token jwt
@@ -83,7 +80,7 @@ public class UsuarioLogadoResource {
                     .entity("Erro ao atualizar informações do usuário: " + e.getMessage())
                     .build();
         }
-    }
+    }*/
 
     @GET
     @RolesAllowed({ "Cliente", "Admin" })

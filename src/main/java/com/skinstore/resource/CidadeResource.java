@@ -84,7 +84,7 @@ public class CidadeResource {
     }
 
     @GET
-    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin", "Cliente"})
     public Response findAll() {
         LOG.info("Buscando todos os Cidade.");
         LOG.debug("Debug de busca de lista de Cidade.");
@@ -108,7 +108,7 @@ public class CidadeResource {
 
     @GET
     @Path("/search/nome/{nome}")
-    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin", "Cliente"})
     public Response findByNome(@PathParam("nome") String nome) {
         try {
             LOG.info("Buscando Cidade pelo nome.");

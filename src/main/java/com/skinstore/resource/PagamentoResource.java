@@ -38,7 +38,7 @@ public class PagamentoResource {
     JsonWebToken jwt;
 
     @POST
-    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin", "Cliente"})
     public Response insert(PagamentoDTO dto) throws Exception {
         LOG.debug("Debug de inserção de Pagamento.");
         try {

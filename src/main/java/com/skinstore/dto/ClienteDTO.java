@@ -12,7 +12,7 @@ public record ClienteDTO(
         String nome,
         @NotBlank(message = "O campo email não pode ser nulo.")
         @Email(message = "O campo email não esta no formato correto!")
-        String login,
+        String email,
         @NotBlank(message = "O campo senha não pode ser nulo.")
         String senha,
         @NotBlank(message = "O campo CPF não pode ser nulo.")

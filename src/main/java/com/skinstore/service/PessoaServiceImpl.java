@@ -4,13 +4,10 @@ import java.util.List;
 
 import com.skinstore.dto.PessoaDTO;
 import com.skinstore.dto.PessoaResponseDTO;
-import com.skinstore.model.Perfil;
 import com.skinstore.model.Pessoa;
 import com.skinstore.model.Usuario;
 import com.skinstore.repository.PedidoRepository;
 import com.skinstore.repository.PessoaRepository;
-import com.skinstore.validation.ValidationException;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -28,21 +25,15 @@ public class PessoaServiceImpl implements PessoaService {
     @Transactional
     public PessoaResponseDTO insert(@Valid PessoaDTO dto) {
 
-        if (repository.findByLogin(dto.email()) != null) {
-            throw new ValidationException("login", "Login já existe.");
-        }
-
         Usuario usuario = new Usuario();
         usuario.setLogin(dto.email());
         usuario.setSenha(dto.senha());
-        usuario.setPerfil(Perfil.valueOf(dto.idPerfil()));
 
         Pessoa pessoa = new Pessoa();
         pessoa.setCpf(dto.cpf());
         pessoa.setNome(dto.nome());
 
         repository.persist(pessoa);
-
         return PessoaResponseDTO.valueOf(pessoa);
     }
 
@@ -54,7 +45,6 @@ public class PessoaServiceImpl implements PessoaService {
         pessoaAtt.setNome(dto.nome());
         pessoaAtt.getUsuario().setLogin(dto.email());
         pessoaAtt.getUsuario().setSenha(dto.senha());
-        pessoaAtt.getUsuario().setPerfil(Perfil.valueOf(dto.idPerfil()));
 
         repository.persist(pessoaAtt);
 

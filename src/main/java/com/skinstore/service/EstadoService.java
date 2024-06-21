@@ -11,5 +11,6 @@ public interface EstadoService {
     public void delete(Long id);
     public EstadoResponseDTO findById(Long id);
     public List<EstadoResponseDTO> findByNome(String nome);
-    public List<EstadoResponseDTO> findByAll(); 
+    public List<EstadoResponseDTO> findByAll();
+    public List<EstadoResponseDTO> findBySigla(String sigla);
 }

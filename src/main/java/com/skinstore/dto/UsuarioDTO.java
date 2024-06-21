@@ -2,6 +2,8 @@ package com.skinstore.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.skinstore.model.Usuario;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -12,6 +14,10 @@ public record UsuarioDTO(
         @NotBlank(message = "O campo senha não pode ser nulo.")
         String senha,
         @NotNull(message = "O campo perfil não pode ser nulo.")
-        Integer idPerfil) 
+        Integer idPerfil,
+        String nome,
+        String cpf,
+        Usuario usuario
+        ) 
 {
 }

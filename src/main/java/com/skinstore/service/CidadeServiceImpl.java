@@ -12,6 +12,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
@@ -51,8 +52,13 @@ public class CidadeServiceImpl implements CidadeService {
     @Override
     @Transactional
     public void delete(Long id) {
-        if (!repository.deleteById(id))
-            throw new NotFoundException();
+        try {
+            if (!repository.deleteById(id)) {
+                throw new NotFoundException(); // Ou outra exceção apropriada
+            }
+        } catch (ConstraintViolationException e) {
+            throw new RuntimeException("Não é possível excluir a entidade devido a dependências existentes", e);
+        }
     }
 
     @Override

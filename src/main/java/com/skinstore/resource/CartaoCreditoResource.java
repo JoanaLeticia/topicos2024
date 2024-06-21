@@ -84,7 +84,7 @@ public class CartaoCreditoResource {
     }
 
     @GET
-    //@RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin"})
     public Response findAll() {
         LOG.info("Buscando todos os Cartao Credito.");
         LOG.debug("Debug de busca de lista de Cartao Credito.");

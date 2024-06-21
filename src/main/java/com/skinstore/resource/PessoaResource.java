@@ -87,7 +87,7 @@ public class PessoaResource {
     }
 
     @GET
-    //@RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin"})
     public Response findAll() {
         LOG.info("Buscando todos as pessoas.");
         LOG.debug("Debug de busca de lista de pessoas.");
@@ -126,7 +126,7 @@ public class PessoaResource {
     @PATCH
     @Transactional
     @Path("/updateNome/{nome}")
-    @RolesAllowed({"Cliente", "Admin"})
+    @RolesAllowed({"Admin"})
     public Response updateNome(@PathParam("nome") String nome) {
         String login = jwt.getSubject();
         try {
@@ -143,7 +143,7 @@ public class PessoaResource {
     @PATCH
     @Transactional
     @Path("/updateCPF/{cpf}")
-    @RolesAllowed({"Cliente", "Admin"})
+    @RolesAllowed({"Admin"})
     public Response updateCPF(@PathParam("cpf") String cpf) {
         String login = jwt.getSubject();
         try {

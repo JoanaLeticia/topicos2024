@@ -34,6 +34,7 @@ public class AdministradorResource {
     private static final Logger LOG = Logger.getLogger(AdministradorResource.class);
 
     @POST
+    @Transactional
     @RolesAllowed({"Admin"})
     public Response insert(@Valid AdministradorDTO dto) {
 
@@ -83,11 +84,11 @@ public class AdministradorResource {
     }
 
     @GET
-    //@RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin"})
     public Response findAll() {
         LOG.info("Buscando todos os administradores.");
         LOG.debug("Debug de busca de lista de administradores.");
-        return Response.ok(service.findByAll()).build();
+        return Response.ok(service.findAll()).build();
     }
 
     @GET
@@ -110,8 +111,8 @@ public class AdministradorResource {
     @RolesAllowed({"Admin"})
     public Response findByNome(@PathParam("nome") String nome) {
         try {
-            LOG.info("Buscando um administrador por ID.");
-            LOG.debug("Debug de busca de ID de administradores.");
+            LOG.info("Buscando um administrador por Nome.");
+            LOG.debug("Debug de busca de nome de administradores.");
            return Response.ok(service.findByNome(nome)).build();
          } catch (EntityNotFoundException e) {
             LOG.info("Erro ao buscar um administrador por ID.");

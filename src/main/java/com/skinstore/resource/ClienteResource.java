@@ -35,6 +35,7 @@ public class ClienteResource {
     private static final Logger LOG = Logger.getLogger(ClienteResource.class);
 
     @POST
+    @Transactional
     @RolesAllowed({"Admin"})
     public Response insert(ClienteDTO dto) throws Exception {
         LOG.debug("Debug de inserção de clientes.");
@@ -82,7 +83,7 @@ public class ClienteResource {
     }
 
     @GET
-    //@RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin"})
     public Response findAll() {
         LOG.info("Buscando todos os clientes.");
         LOG.debug("Debug de busca de lista de clientes.");

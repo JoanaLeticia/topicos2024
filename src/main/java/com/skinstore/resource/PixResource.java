@@ -84,7 +84,7 @@ public class PixResource {
     }
 
     @GET
-    //@RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin"})
     public Response findAll() {
         LOG.info("Buscando todos os Pix.");
         LOG.debug("Debug de busca de lista de Pix.");

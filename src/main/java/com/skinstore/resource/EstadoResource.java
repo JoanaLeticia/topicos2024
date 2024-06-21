@@ -83,7 +83,7 @@ public class EstadoResource {
     }
 
     @GET
-    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin", "Cliente"})
     public Response findAll() {
         LOG.info("Buscando todos os Estado.");
         LOG.debug("Debug de busca de lista de Estado.");
@@ -107,7 +107,7 @@ public class EstadoResource {
 
     @GET
     @Path("/search/nome/{nome}")
-    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin", "Cliente"})
     public Response findByNome(@PathParam("nome") String cep) {
         try {
             LOG.info("Buscando Estado pelo nome.");
@@ -115,6 +115,20 @@ public class EstadoResource {
             return Response.ok(service.findByNome(cep)).build();
         } catch (EntityNotFoundException e) {
             LOG.error("Erro ao buscar Estado pelo nome.");
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
+    }
+
+    @GET
+    @Path("/search/sigla/{sigla}")
+    @RolesAllowed({"Admin", "Cliente"})
+    public Response findBySigla(@PathParam("sigla") String sigla) {
+        try {
+            LOG.info("Buscando Estado pela sigla.");
+            LOG.debug("Debug de busca de Estado pela sigla.");
+            return Response.ok(service.findBySigla(sigla)).build();
+        } catch (EntityNotFoundException e) {
+            LOG.error("Erro ao buscar Estado pela siglaa.");
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
     }

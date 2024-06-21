@@ -84,7 +84,7 @@ public class EnderecoResource {
     }
 
     @GET
-    //@RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin"})
     public Response findAll() {
         LOG.info("Buscando todos os Endereco.");
         LOG.debug("Debug de busca de lista de Endereco.");

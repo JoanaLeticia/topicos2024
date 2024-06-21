@@ -79,4 +79,10 @@ public class EstadoServiceImpl implements EstadoService {
         return repository.listAll().stream().map(u -> EstadoResponseDTO.valueOf(u)).toList();
     }
 
+    @Override
+    public List<EstadoResponseDTO> findBySigla(String sigla) {
+        return repository.findBySigla(sigla).stream()
+        .map(e -> EstadoResponseDTO.valueOf(e)).toList();
+    }
+
 }

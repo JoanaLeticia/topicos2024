@@ -7,7 +7,6 @@ import com.skinstore.application.Result;
 import com.skinstore.dto.PedidoDTO;
 import com.skinstore.dto.PedidoResponseDTO;
 import com.skinstore.service.PedidoService;
-import com.skinstore.service.UsuarioService;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -33,14 +32,12 @@ public class PedidoResource {
     PedidoService service;
 
     @Inject
-    UsuarioService usuarioService;
-
-    @Inject
     JsonWebToken jwt;
 
     private static final Logger LOG = Logger.getLogger(PedidoResource.class);
 
     @POST
+    @Transactional
     @RolesAllowed({"Cliente"})
     public Response insert(PedidoDTO dto) {
 
@@ -62,7 +59,7 @@ public class PedidoResource {
     @DELETE
     @Transactional
     @Path("/{id}")
-    @RolesAllowed({"Cliente",  "Admin"})
+    @RolesAllowed({"Admin"})
     public Response delete(@PathParam("id") Long id) {
         try {
             LOG.info("Deletando o Pedido");
@@ -77,7 +74,7 @@ public class PedidoResource {
     }
 
     @GET
-    //@RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin"})
     public Response findAll() {
         LOG.info("Buscando todos os Pedidos.");
         LOG.debug("Debug de busca de lista de Pedidos.");

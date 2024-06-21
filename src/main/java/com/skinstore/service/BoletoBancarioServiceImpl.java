@@ -4,10 +4,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.jboss.logging.Logger;
+
 import com.skinstore.dto.BoletoBancarioDTO;
 import com.skinstore.dto.BoletoBancarioResponseDTO;
 import com.skinstore.model.BoletoBancario;
 import com.skinstore.repository.BoletoBancarioRepository;
+import com.skinstore.resource.BoletoBancarioResource;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -21,6 +24,8 @@ public class BoletoBancarioServiceImpl implements BoletoBancarioService {
     @Inject
     BoletoBancarioRepository repository;
 
+    private static final Logger LOG = Logger.getLogger(BoletoBancarioResource.class);
+
     @Override
     @Transactional
     public BoletoBancarioResponseDTO insert(BoletoBancarioDTO dto) {
@@ -28,6 +33,7 @@ public class BoletoBancarioServiceImpl implements BoletoBancarioService {
         novoBoletoBancario.setBanco(dto.banco());
         novoBoletoBancario.setNumeroBoleto(dto.numeroBoleto());
         if (dto.dataVencimento().isBefore(LocalDate.now())) {
+            LOG.info("A data de vencimento é anterior ao dia atual.");
             throw new IllegalArgumentException("A data de vencimento não pode ser anterior ao dia atual");
         }
         novoBoletoBancario.setDataVencimento(dto.dataVencimento());

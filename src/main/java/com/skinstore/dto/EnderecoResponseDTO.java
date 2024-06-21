@@ -1,6 +1,5 @@
 package com.skinstore.dto;
 
-import com.skinstore.model.Cidade;
 import com.skinstore.model.Endereco;
 
 public record EnderecoResponseDTO(
@@ -8,13 +7,13 @@ public record EnderecoResponseDTO(
         String numero,
         String complemento,
         String cep,
-        Cidade cidade) {
+        CidadeResponseDTO cidade) {
     public static EnderecoResponseDTO valueOf(Endereco endereco) {
         return new EnderecoResponseDTO(
                 endereco.getId(),
                 endereco.getNumero(),
                 endereco.getComplemento(),
                 endereco.getCep(),
-                endereco.getCidade());
+                CidadeResponseDTO.valueOf(endereco.getCidade()));
     }
 }

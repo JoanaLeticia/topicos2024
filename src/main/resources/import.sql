@@ -1,10 +1,12 @@
--- Inserindo usuários
-insert into usuario(login, senha, perfil) values('joanaleticia@unitins.br', '123456', 2);
-insert into usuario(login, senha, perfil) values('ronaldocosta@unitins.br', '543421', 2);
-insert into usuario(login, senha, perfil) values('luisvictor@unitins.br', '676594', 2);
-insert into usuario(login, senha, perfil) values('lucassilva@unitins.br', '12485382', 1);
-insert into usuario(login, senha, perfil) values('carollopes@unitins.br', '43028403', 1);
-insert into usuario(login, senha, perfil) values('nicolasgiacomelli@unitins.br', '203192', 1);
+-- Inserindo usuários (administradores)
+insert into usuario(login, senha, perfil) values('joanaleticia@skinstore.br', 'TRwn0XU29Gwl2sagG00bvjrNJvLuYo+dbOBJ7R3xFpU4m/FAUc5q8OoGbVNwPF7F5713RaYkN4qyufNCDHm/mA==', 1); -- 123
+insert into usuario(login, senha, perfil) values('ronaldocosta@skinstore.br', '2jqHB2Uf9imuz2oRVlzQCEMTCOoHPgbnPCwXCm100JmUzMNhlZFMjcXoeWp9T91TTCruG2sL5JNYRvt6wtw2Ew==', 1); -- 321
+insert into usuario(login, senha, perfil) values('luisvictor@skinstore.br', 'tZYRBf5GvY1a50GXJECowW55ttUHZwdYuOL2f34tfdzXOYpGWD5rBr5+4bpeRCUFAhf+vw4CpiFWmF1Bb8FcBw==', 1); -- senha987
+
+-- Inserindo usuários (clientes)
+insert into usuario(login, senha, perfil) values('lucassilva@unitins.br', 'TRwn0XU29Gwl2sagG00bvjrNJvLuYo+dbOBJ7R3xFpU4m/FAUc5q8OoGbVNwPF7F5713RaYkN4qyufNCDHm/mA==', 2); -- 123
+insert into usuario(login, senha, perfil) values('carollopes@unitins.br', '2jqHB2Uf9imuz2oRVlzQCEMTCOoHPgbnPCwXCm100JmUzMNhlZFMjcXoeWp9T91TTCruG2sL5JNYRvt6wtw2Ew==', 2); -- 321
+insert into usuario(login, senha, perfil) values('nicolasg@unitins.br', 'tZYRBf5GvY1a50GXJECowW55ttUHZwdYuOL2f34tfdzXOYpGWD5rBr5+4bpeRCUFAhf+vw4CpiFWmF1Bb8FcBw==', 2); -- senha987
 
 -- Inserindo pessoas
 insert into pessoa(nome, cpf, id_usuario) values('Joana Letícia', '123.456.789-00', 1);
@@ -59,24 +61,24 @@ insert into cliente_endereco (id_cliente, id_endereco) values(2, 2);
 insert into cliente_endereco (id_cliente, id_endereco) values(3, 3);
 
 -- Pix
-insert into pix (id, chavePix) values(1, 'luisvictor@hotmail.com');
-insert into pix (id, chavePix) values(2, '11992342311');
+insert into pix (chavePix) values('luisvictor@hotmail.com');
+insert into pix (chavePix) values('11992342311');
 
 -- Boleto Bancario
-insert into boletoBancario (id, banco, numeroBoleto, dataVencimento) 
-values(1, 'Banco do Brasil', '3543564421', '2024-09-01');
-insert into boletoBancario (id, banco, numeroBoleto, dataVencimento) 
-values(2, 'Inter', '2132153345', '2026-05-04');
-insert into boletoBancario (id, banco, numeroBoleto, dataVencimento) 
-values(3, 'Nubank', '3452353453', '2025-02-05');
+insert into boletoBancario (banco, numeroBoleto, dataVencimento) 
+values('Banco do Brasil', '3543564421', '2024-09-01');
+insert into boletoBancario (banco, numeroBoleto, dataVencimento) 
+values('Inter', '2132153345', '2026-05-04');
+insert into boletoBancario (banco, numeroBoleto, dataVencimento) 
+values('Nubank', '3452353453', '2025-02-05');
 
 -- Cartão de Crédito
-insert into cartaoCredito (id, bandeira, numeroCartao, codigoSeguranca, dataVencimento) 
-values(1, 'Visa', '4543523412432534', '432', '2024-03-08');
-insert into cartaoCredito (id, bandeira, numeroCartao, codigoSeguranca, dataVencimento) 
-values(2, 'MasterCard', '3243254364534213', '124', '2024-03-08');
-insert into cartaoCredito (id, bandeira, numeroCartao, codigoSeguranca, dataVencimento) 
-values(3, 'Elo', '35436437547657', '654', '2024-03-08');
+insert into cartaoCredito (bandeira, numeroCartao, codigoSeguranca, dataVencimento) 
+values('Visa', '4543523412432534', '432', '2024-03-08');
+insert into cartaoCredito (bandeira, numeroCartao, codigoSeguranca, dataVencimento) 
+values('MasterCard', '3243254364534213', '124', '2024-03-08');
+insert into cartaoCredito (bandeira, numeroCartao, codigoSeguranca, dataVencimento) 
+values('Elo', '35436437547657', '654', '2024-03-08');
 
 -- Inserindo produtos
 insert into produto (nome,  linkSteam, valor, quantEstoque, tipo, arma, exterior, numeroFloat, pattern, disponibilidade) values ('AK-47 | Neon Rider', 'https://steamcommunity.com/market/listings/730/AK-47%20%7C%20Neon%20Rider%20%28Battle-Scarred%29', 138.97, 1, 'RIFLE', 'AK47', 'BS', 0.073495, 368, 'PRONTAENTREGA');

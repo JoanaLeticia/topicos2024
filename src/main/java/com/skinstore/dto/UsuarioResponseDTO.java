@@ -1,18 +1,17 @@
 package com.skinstore.dto;
 
-import com.skinstore.model.Perfil;
-import com.skinstore.model.Usuario;
+import com.skinstore.model.Pessoa;
 
 public record UsuarioResponseDTO(
-    Long id,
     String login,
-    Perfil perfil
+    String nome,
+    int perfil
 ) { 
-    public static UsuarioResponseDTO valueOf(Usuario usuario){
+    public static UsuarioResponseDTO valueOf(Pessoa pessoa){
         return new UsuarioResponseDTO(
-            usuario.getId(),
-            usuario.getLogin(),
-            usuario.getPerfil()
+            pessoa.getUsuario().getLogin(),
+            pessoa.getNome(),
+            pessoa.getUsuario().getPerfil()
         );
     }
     

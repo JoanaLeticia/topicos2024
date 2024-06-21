@@ -1,15 +1,13 @@
 package com.skinstore.service;
 
-import java.util.List;
-
 import com.skinstore.dto.UsuarioDTO;
 import com.skinstore.dto.UsuarioResponseDTO;
-import com.skinstore.model.Perfil;
+import com.skinstore.model.Pessoa;
 import com.skinstore.model.Usuario;
 import com.skinstore.repository.PedidoRepository;
+import com.skinstore.repository.PessoaRepository;
 import com.skinstore.repository.UsuarioRepository;
 import com.skinstore.validation.ValidationException;
-
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -25,6 +23,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Inject
     PedidoRepository pedidoRepository;
 
+    @Inject
+    PessoaRepository pessoaRepository;
+
     @Override
     @Transactional
     public UsuarioResponseDTO insert(@Valid UsuarioDTO dto) {
@@ -33,27 +34,38 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new ValidationException("login", "Login já existe.");
         }
 
-        Usuario usuario = new Usuario();
-        usuario.setLogin(dto.login());
-        usuario.setSenha(dto.senha());
-        usuario.setPerfil(Perfil.valueOf(dto.idPerfil()));
+        Usuario novoUsuario = new Usuario();
+        novoUsuario.setLogin(dto.login());
+        novoUsuario.setSenha(dto.senha());
+        novoUsuario.setPerfil(dto.idPerfil());
 
-        repository.persist(usuario);
+        Pessoa novaPessoa = new Pessoa();
+        novaPessoa.setNome(dto.nome());
+        novaPessoa.setCpf(dto.cpf());
+        novaPessoa.setUsuario(novoUsuario);
 
-        return UsuarioResponseDTO.valueOf(usuario);
+        repository.persist(novoUsuario);
+
+        return UsuarioResponseDTO.valueOf(novaPessoa);
     }
 
     @Override
     @Transactional
     public UsuarioResponseDTO update(UsuarioDTO dto, Long id) {
-        Usuario usuarioAtt = repository.findById(id);
-        usuarioAtt.setLogin(dto.login());
-        usuarioAtt.setSenha(dto.senha());
-        usuarioAtt.setPerfil(Perfil.valueOf(dto.idPerfil()));
 
-        repository.persist(usuarioAtt);
+        Usuario attUsuario = new Usuario();
+        attUsuario.setLogin(dto.login());
+        attUsuario.setSenha(dto.senha());
+        attUsuario.setPerfil(dto.idPerfil());
 
-        return UsuarioResponseDTO.valueOf(usuarioAtt);
+        Pessoa attPessoa = new Pessoa();
+        attPessoa.setNome(dto.nome());
+        attPessoa.setCpf(dto.cpf());
+        attPessoa.setUsuario(attUsuario);
+
+        repository.persist(attUsuario);
+
+        return UsuarioResponseDTO.valueOf(attPessoa);
     }
 
     @Override
@@ -64,39 +76,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioResponseDTO findById(Long id) {
-        return UsuarioResponseDTO.valueOf(repository.findById(id));
+        return UsuarioResponseDTO.valueOf(pessoaRepository.findById(id));
     }
-
-    @Override
-    public List<UsuarioResponseDTO> findByAll() {
-        return repository.listAll().stream()
-                .map(e -> UsuarioResponseDTO.valueOf(e)).toList();
-    }
-
-    @Override
-    public UsuarioResponseDTO findByLoginAndSenha(String login, String senha) {
-        Usuario usuario = repository.findByLoginAndSenha(login, senha);
-        if (usuario == null)
-            throw new ValidationException("login", "Login ou senha inválido");
-
-        return UsuarioResponseDTO.valueOf(usuario);
-    }
-
-    @Override
-    public UsuarioResponseDTO findByLogin(String login) {
-        Usuario usuario = repository.findByLogin(login);
-        if (usuario == null)
-            throw new ValidationException("login", "Login inválido");
-
-        return UsuarioResponseDTO.valueOf(usuario);
-    }
-
-    @Override
-    public UsuarioResponseDTO updateSenha(String login, String senha) {
-        Usuario usuario = repository.findByLogin(login);
-        usuario.setSenha(senha);
-        repository.persist(usuario);
-        return UsuarioResponseDTO.valueOf(usuario);
-    }
-
+    
 }

@@ -81,7 +81,7 @@ public class BoletoBancarioResource {
     }
 
     @GET
-    //@RolesAllowed({"Admin"})
+    @RolesAllowed({"Admin"})
     public Response findAll() {
         LOG.info("Buscando todos os Boleto Bancario.");
         LOG.debug("Debug de busca de lista de Boleto Bancario.");

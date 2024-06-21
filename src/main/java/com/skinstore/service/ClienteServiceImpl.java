@@ -4,21 +4,28 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.jboss.logging.Logger;
+
 import com.skinstore.dto.ClienteDTO;
 import com.skinstore.dto.ClienteResponseDTO;
+import com.skinstore.dto.UsuarioResponseDTO;
 import com.skinstore.model.Cidade;
 import com.skinstore.model.Cliente;
 import com.skinstore.model.Endereco;
-import com.skinstore.model.Perfil;
 import com.skinstore.model.Pessoa;
 import com.skinstore.model.Telefone;
 import com.skinstore.model.Usuario;
 import com.skinstore.repository.CidadeRepository;
 import com.skinstore.repository.ClienteRepository;
+import com.skinstore.repository.PessoaRepository;
+import com.skinstore.repository.UsuarioRepository;
+import com.skinstore.resource.ClienteResource;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
@@ -30,25 +37,47 @@ public class ClienteServiceImpl implements ClienteService {
     @Inject
     CidadeRepository cidadeRepository;
 
+    @Inject
+    UsuarioRepository usuarioRepository;
+
+    @Inject
+    PessoaRepository pessoaRepository;
+
+    @Inject
+    HashService hashService;
+
+    private static final Logger LOG = Logger.getLogger(ClienteResource.class);
+
     @Override
     @Transactional
-    public ClienteResponseDTO insert(ClienteDTO dto) throws Exception {
-        if (repository.findByEmail(dto.login()) != null) {
-            throw new Exception("Login já existe.");
-        }
+    public ClienteResponseDTO insert(@Valid ClienteDTO dto) {
+        // Log de entrada no método
+        LOG.info("Iniciando inserção do cliente");
 
+        // Criação e persistência do usuário
         Usuario usuario = new Usuario();
-        usuario.setLogin(dto.login());
-        usuario.setSenha(dto.senha());
-        usuario.setPerfil(Perfil.CLIENTE);
+        usuario.setLogin(dto.email());
+        usuario.setSenha(hashService.getHashSenha(dto.senha()));
+        
+        usuarioRepository.persist(usuario);
+        // Log após persistir usuário
+        LOG.info("Usuário persistido com ID: " + usuario.getId());
 
         Pessoa pessoa = new Pessoa();
         pessoa.setCpf(dto.cpf());
         pessoa.setNome(dto.nome());
+        pessoa.setUsuario(usuario);
+    
+        pessoaRepository.persist(pessoa);
+        // Log após persistir pessoa
+        LOG.info("Pessoa persistida com ID: " + pessoa.getId());
 
+        // Criação do cliente
         Cliente cliente = new Cliente();
         cliente.setDataNascimento(dto.dataNascimento());
+        cliente.setPessoa(pessoa); // Atribui a pessoa ao cliente
 
+        // Adiciona telefones ao cliente, se existirem
         if (dto.listaTelefone() != null && !dto.listaTelefone().isEmpty()) {
             List<Telefone> telefones = dto.listaTelefone().stream()
                     .map(tel -> {
@@ -63,6 +92,7 @@ public class ClienteServiceImpl implements ClienteService {
             cliente.setTelefones(Collections.emptyList());
         }
 
+        // Adiciona endereços ao cliente, se existirem
         if (dto.listaEndereco() != null && !dto.listaEndereco().isEmpty()) {
             List<Endereco> enderecos = dto.listaEndereco().stream()
                     .map(end -> {
@@ -80,12 +110,14 @@ public class ClienteServiceImpl implements ClienteService {
                     })
                     .collect(Collectors.toList());
             cliente.setEndereco(enderecos);
-            cliente.getPessoa().getUsuario().setPerfil(Perfil.CLIENTE);
         } else {
             cliente.setEndereco(Collections.emptyList());
-        } 
+        }
 
+        // Persistência do cliente
         repository.persist(cliente);
+        // Log após persistir administrador
+        LOG.info("Cliente persistido com ID da pessoa: " + cliente.getPessoa().getId());
 
         return ClienteResponseDTO.valueOf(cliente);
     }
@@ -99,9 +131,8 @@ public class ClienteServiceImpl implements ClienteService {
         clienteExistente.setDataNascimento(dto.dataNascimento());
         clienteExistente.getPessoa().setCpf(dto.cpf());
         clienteExistente.getPessoa().setNome(dto.nome());
-        clienteExistente.getPessoa().getUsuario().setLogin(dto.login());
-        clienteExistente.getPessoa().getUsuario().setLogin(dto.senha());
-        clienteExistente.getPessoa().getUsuario().setPerfil(Perfil.CLIENTE);
+        clienteExistente.getPessoa().getUsuario().setLogin(dto.email());
+        clienteExistente.getPessoa().getUsuario().setSenha(hashService.getHashSenha(dto.senha()));
 
         if (dto.listaTelefone() != null && !dto.listaTelefone().isEmpty()) {
             clienteExistente.getTelefones().clear();
@@ -168,6 +199,33 @@ public class ClienteServiceImpl implements ClienteService {
     public List<ClienteResponseDTO> findByAll() {
         return repository.listAll().stream()
                 .map(e -> ClienteResponseDTO.valueOf(e)).toList();
+    }
+
+    public UsuarioResponseDTO login(String login, String senha) {
+        // Log de entrada no método
+        LOG.info("Tentativa de login com login: " + login);
+        
+        // Busca pelo cliente
+        Cliente cliente = repository.findByLoginAndSenha(login, senha);
+    
+        // Verifica se o cliente é nulo
+        if (cliente == null) {
+            // Log de erro
+            LOG.info("Cliente não encontrado para o login: " + login + " e senha fornecida");
+            throw new RuntimeException("Cliente não encontrado");
+        }
+    
+        // Verifica se a pessoa associada ao cliente é nula
+        if (cliente.getPessoa() == null) {
+            // Log de erro
+            LOG.info("Pessoa não encontrada para o cliente com login: " + login);
+            throw new RuntimeException("Pessoa não encontrada para o cliente");
+        }
+    
+        // Log de sucesso
+        LOG.info("Login bem-sucedido para o cliente com login: " + login);
+    
+        return UsuarioResponseDTO.valueOf(cliente.getPessoa());
     }
 
 }
