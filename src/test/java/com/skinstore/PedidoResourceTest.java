@@ -82,9 +82,9 @@ public class PedidoResourceTest {
     @Test
     public void updateTest() {
         List<ItemPedidoDTO> listaItensPedidos = new ArrayList<ItemPedidoDTO>();
-        listaItensPedidos.add(new ItemPedidoDTO(Integer.valueOf(1), 40.0, 1L));
+        listaItensPedidos.add(new ItemPedidoDTO(Integer.valueOf(1), 1L));
 
-        PedidoDTO dto = new PedidoDTO(Long.valueOf(1), listaItensPedidos);
+        PedidoDTO dto = new PedidoDTO(listaItensPedidos);
 
         given()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -100,20 +100,20 @@ public class PedidoResourceTest {
     public void deleteTest() {
         List<ItemPedidoDTO> listaItensPedidos = new ArrayList<ItemPedidoDTO>();
 
-        listaItensPedidos.add(new ItemPedidoDTO(Integer.valueOf(1), 523.03, 2L));
+        listaItensPedidos.add(new ItemPedidoDTO(Integer.valueOf(1), 2L));
 
-        PedidoDTO dto = new PedidoDTO(Long.valueOf(1), listaItensPedidos);
+        PedidoDTO dto = new PedidoDTO(listaItensPedidos);
 
         PedidoResponseDTO response = pedidoService.insert(dto, null);
 
         given()
                 .when()
-                .pathParam("id", response.id())
+                .pathParam("id", response.idPedido())
                 .delete("/pedidos/{id}")
                 .then()
                 .statusCode(204);
 
-        pedidoService.delete(response.id());
-        assertNull(pedidoService.findById(response.id()));
+        pedidoService.delete(response.idPedido());
+        assertNull(pedidoService.findById(response.idPedido()));
     }
 }

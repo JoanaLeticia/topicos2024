@@ -9,11 +9,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class Pedido extends DefaultEntity {
     private LocalDateTime dataHora;
-    
+
     private Double valorTotal;
 
     @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "pedido", fetch = FetchType.EAGER)
@@ -26,6 +27,10 @@ public class Pedido extends DefaultEntity {
     @ManyToOne
     @JoinColumn(name = "id_endereco")
     private Endereco endereco;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "pagamento_id")
+    private Pagamento pagamento;
 
     public List<ItemPedido> getItens() {
         return itens;
@@ -65,6 +70,14 @@ public class Pedido extends DefaultEntity {
 
     public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
+    }
+
+    public Pagamento getPagamento() {
+        return pagamento;
+    }
+
+    public void setPagamento(Pagamento pagamento) {
+        this.pagamento = pagamento;
     }
 
 }

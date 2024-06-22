@@ -1,5 +1,8 @@
 package com.skinstore.service;
 
+import java.util.Date;
+import java.util.List;
+
 import com.skinstore.dto.UsuarioDTO;
 import com.skinstore.dto.UsuarioResponseDTO;
 
@@ -15,5 +18,19 @@ public interface UsuarioService {
 
     public UsuarioResponseDTO findById(Long id);
 
-    
+    public List<UsuarioResponseDTO> findByNome(String nome);
+
+    public UsuarioResponseDTO findByLoginAndSenha(String login, String senha);
+
+    public UsuarioResponseDTO findByLogin(String login);
+
+    public List<UsuarioResponseDTO> findByAll(); 
+
+    public UsuarioResponseDTO updateSenha(String login, String senhaString);
+
+    public UsuarioResponseDTO updateNome( String login, String nome);
+
+    public UsuarioResponseDTO updateMatricula(String login, Integer novaMatricula);
+
+    public UsuarioResponseDTO updateDataNasc(String login, Date novaDataNasc);
 }

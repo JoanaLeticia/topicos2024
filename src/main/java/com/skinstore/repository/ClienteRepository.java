@@ -22,7 +22,7 @@ public class ClienteRepository implements PanacheRepository<Cliente>{
 
     public Cliente findByLogin(String login) {
         try {
-            return find("login = ?1", login).singleResult();
+            return find("pessoa.usuario.login = ?1", login).singleResult();
         } catch (NoResultException e) {
             e.printStackTrace();
             return null;

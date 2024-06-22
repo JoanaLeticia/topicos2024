@@ -1,5 +1,6 @@
 package com.skinstore.resource;
 
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -16,9 +17,12 @@ import com.skinstore.service.UsuarioService;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -48,7 +52,7 @@ public class UsuarioLogadoResource {
 
     private static final Logger LOG = Logger.getLogger(UsuarioLogadoResource.class);
 
-    /*@GET
+    @GET
     @RolesAllowed({ "Cliente", "Admin" })
     public Response getUsuario() {
         // obtendo o login pelo token jwt
@@ -80,7 +84,58 @@ public class UsuarioLogadoResource {
                     .entity("Erro ao atualizar informações do usuário: " + e.getMessage())
                     .build();
         }
-    }*/
+    }
+
+    @PATCH
+    @Transactional
+    @Path("/updateNome/{nome}")
+    @RolesAllowed({ "Cliente", "Admin" })
+    public Response updateNome(@PathParam("nome") String nome) {
+        String login = jwt.getSubject();
+        try {
+            usuarioService.updateNome(login, nome);
+            LOG.info("Nome atualizado!");
+            return Response.ok("Informações do usuário atualizadas com sucesso").build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Erro ao atualizar informações do usuário: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @PATCH
+    @Transactional
+    @Path("/updateMatricula/{matricula}")
+    @RolesAllowed({ "Admin" })
+    public Response updateMatricula(@PathParam("matricula") Integer matricula) {
+        String login = jwt.getSubject();
+        try {
+            usuarioService.updateMatricula(login, matricula);
+            LOG.info("Matricula atualizado!");
+            return Response.ok("Informações do usuário atualizadas com sucesso").build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Erro ao atualizar informações do usuário: " + e.getMessage())
+                    .build();
+        }
+    }
+
+    @PATCH
+    @Transactional
+    @Path("/updateDataNascimento/{dataNasc}")
+    @RolesAllowed({ "Cliente" })
+    public Response updateDataNasc(@PathParam("dataNasc") Date dataNasc) {
+        String login = jwt.getSubject();
+        try {
+            usuarioService.updateDataNasc(login, dataNasc);
+            LOG.info("Data de nascimento atualizada!");
+            return Response.ok("Informações do usuário atualizadas com sucesso").build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Erro ao atualizar informações do usuário: " + e.getMessage())
+                    .build();
+        }
+    }
 
     @GET
     @RolesAllowed({ "Cliente", "Admin" })
@@ -95,7 +150,9 @@ public class UsuarioLogadoResource {
             return Response.ok(pedidos).build();
         } else {
             LOG.error("Usuário não encontrado: " + login);
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND)
+            .entity("Usuário não é cliente ou não foi encontrado.")
+            .build();
         }
     }
 
@@ -112,7 +169,10 @@ public class UsuarioLogadoResource {
             return Response.ok(itens).build();
         } else {
             LOG.error("Usuário não encontrado: " + login);
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND)
+            .entity("Usuário não é cliente ou não foi encontrado.")
+            .build();
         }
     }
+    
 }

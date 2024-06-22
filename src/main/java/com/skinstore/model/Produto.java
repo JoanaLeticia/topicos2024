@@ -1,6 +1,5 @@
 package com.skinstore.model;
 
-import java.math.BigDecimal;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,7 +14,7 @@ public class Produto extends DefaultEntity {
     private String linkSteam;
 
     @Column
-    private BigDecimal valor;
+    private Double valor;
 
     // Cada produto é único
     @Column(columnDefinition = "INTEGER CHECK (quantEstoque >= 0)")
@@ -59,14 +58,6 @@ public class Produto extends DefaultEntity {
 
     public void setLinkSteam(String linkSteam) {
         this.linkSteam = linkSteam;
-    }
-
-    public BigDecimal getValor() {
-        return valor;
-    }
-
-    public void setValor(BigDecimal valor) {
-        this.valor = valor;
     }
 
     public Integer getQuantEstoque() {
@@ -135,6 +126,14 @@ public class Produto extends DefaultEntity {
 
     public void setNomeImagem(String nomeImagem) {
         this.nomeImagem = nomeImagem;
+    }
+
+    public Double getValor() {
+        return valor;
+    }
+
+    public void setValor(Double valor) {
+        this.valor = valor;
     }
 
 }

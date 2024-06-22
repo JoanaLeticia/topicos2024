@@ -38,13 +38,15 @@ public class PedidoResource {
 
     @POST
     @Transactional
-    @RolesAllowed({"Cliente"})
+    @RolesAllowed({"Cliente", "Admin"})
     public Response insert(PedidoDTO dto) {
 
         LOG.debug("Debug de inserção de Pedido.");
         try {
             LOG.info("Recuperando o identificador do usuário do token");
             String login = jwt.getSubject();
+            LOG.info("Usuário logado: " + login);
+
             LOG.info("Inserção do pedido Concluida!");
             PedidoResponseDTO retorno = service.insert(dto, login);
             return Response.status(201).entity(retorno).build();
@@ -90,6 +92,20 @@ public class PedidoResource {
             LOG.info("Buscando um pedido por ID.");
             LOG.debug("Debug de busca de ID de pedido.");
             return Response.ok(a).build();
+        } catch (EntityNotFoundException e) {
+            LOG.error("Erro ao buscar um pedido por ID.");
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
+    }
+
+    @GET
+    @Path("/{idcliente}")
+    @RolesAllowed({"Admin"})
+    public Response findByClienteId(@PathParam("idcliente") Long id) {
+        try {
+            LOG.info("Buscando um pedido por ID.");
+            LOG.debug("Debug de busca de ID de pedido.");
+            return Response.ok(service.findAllPedidosByClienteId(id)).build();
         } catch (EntityNotFoundException e) {
             LOG.error("Erro ao buscar um pedido por ID.");
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();

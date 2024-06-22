@@ -1,5 +1,6 @@
 package com.skinstore.dto;
 
+import java.util.Date;
 import java.util.List;
 
 import com.skinstore.model.Cliente;
@@ -9,12 +10,13 @@ public record ClienteResponseDTO(
     String nome,
     String cpf,
     String login,
+    Date dataNascimento,
     List<TelefoneResponseDTO> listaTelefone,
     List<EnderecoResponseDTO> listaEndereco
 ) { 
     public static ClienteResponseDTO valueOf(Cliente cliente){
         if (cliente == null) {
-            return new ClienteResponseDTO(null, null, null, null, null, null);
+            return new ClienteResponseDTO(null, null, null, null, null, null, null);
         }
 
         List<TelefoneResponseDTO> listaTelefones = cliente.getTelefones()
@@ -31,6 +33,7 @@ public record ClienteResponseDTO(
             cliente.getPessoa().getNome(),
             cliente.getPessoa().getCpf(),
             cliente.getPessoa().getUsuario().getLogin(),
+            cliente.getDataNascimento(),
             listaTelefones,
             listaEndereco
         );

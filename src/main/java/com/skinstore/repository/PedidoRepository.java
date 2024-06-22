@@ -26,6 +26,5 @@ public class PedidoRepository implements PanacheRepository<Pedido> {
                 .firstResultOptional()
                 .orElse(null);
     }
-    
 
 }

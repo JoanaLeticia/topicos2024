@@ -3,8 +3,6 @@ package com.skinstore;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-
 import com.skinstore.dto.ProdutoDTO;
 import com.skinstore.dto.ProdutoResponseDTO;
 import com.skinstore.service.ProdutoService;
@@ -72,7 +70,7 @@ public class ProdutoResourceTest {
 
     @Test
     public void updateTest() {
-        ProdutoDTO dto = new ProdutoDTO("StatTrak™ M4A4 | The Emperor", "https://steamcommunity.com/market/listings/730/StatTrak%E2%84%A2%20M4A4%20%7C%20The%20Emperor%20%28Factory%20New%29", BigDecimal.valueOf(2915.95), Integer.valueOf(1), Integer.valueOf(4), Integer.valueOf(2), Integer.valueOf(1), 0.0003295f, 333, Integer.valueOf(6));
+        ProdutoDTO dto = new ProdutoDTO("StatTrak™ M4A4 | The Emperor", "https://steamcommunity.com/market/listings/730/StatTrak%E2%84%A2%20M4A4%20%7C%20The%20Emperor%20%28Factory%20New%29", Double.valueOf(2915.95), Integer.valueOf(1), Integer.valueOf(4), Integer.valueOf(2), Integer.valueOf(1), 0.0003295f, 333, Integer.valueOf(6));
 
         given()
             .contentType(MediaType.APPLICATION_JSON)
@@ -86,7 +84,7 @@ public class ProdutoResourceTest {
 
     @Test
     public void deleteTest() {
-        ProdutoDTO dto = new ProdutoDTO("MP9 | Pandora's Box", "https://steamcommunity.com/market/listings/730/MP9%20%7C%20Pandora%27s%20Box%20%28Field-Tested%29", BigDecimal.valueOf(717.71), Integer.valueOf(1), Integer.valueOf(6), Integer.valueOf(7), Integer.valueOf(3), 0.032142f, 112, Integer.valueOf(1));
+        ProdutoDTO dto = new ProdutoDTO("MP9 | Pandora's Box", "https://steamcommunity.com/market/listings/730/MP9%20%7C%20Pandora%27s%20Box%20%28Field-Tested%29", Double.valueOf(717.71), Integer.valueOf(1), Integer.valueOf(6), Integer.valueOf(7), Integer.valueOf(3), 0.032142f, 112, Integer.valueOf(1));
 
         ProdutoResponseDTO response = produtoService.insert(dto);
 

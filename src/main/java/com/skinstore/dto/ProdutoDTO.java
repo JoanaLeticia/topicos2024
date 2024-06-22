@@ -1,7 +1,5 @@
 package com.skinstore.dto;
 
-import java.math.BigDecimal;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -11,7 +9,7 @@ public record ProdutoDTO (
     @NotBlank(message = "O campo link da steam não pode ser nulo.")
     String linkSteam,
     @NotNull(message = "O campo valor não pode ser nulo.")
-    BigDecimal valor,
+    Double valor,
     @NotNull(message = "O campo quantidade não pode ser nulo.")
     Integer quantEstoque,
     Integer idTipo,

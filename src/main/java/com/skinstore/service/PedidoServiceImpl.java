@@ -10,7 +10,6 @@ import com.skinstore.dto.ItemPedidoResponseDTO;
 import com.skinstore.dto.PedidoDTO;
 import com.skinstore.dto.PedidoResponseDTO;
 import com.skinstore.model.Cliente;
-import com.skinstore.model.Endereco;
 import com.skinstore.model.ItemPedido;
 import com.skinstore.model.Pedido;
 import com.skinstore.model.Produto;
@@ -53,33 +52,36 @@ public class PedidoServiceImpl implements PedidoService {
         pedido.setDataHora(LocalDateTime.now());
 
         Double total = 0.0;
-        for (ItemPedidoDTO itemDTO : dto.itens()) {
-            total += (itemDTO.valor() * itemDTO.quantidade());
-        }
-        pedido.setValorTotal(total);
 
-        pedido.setItens(new ArrayList<ItemPedido>());
+        List<ItemPedido> itensPedido = new ArrayList<>();
         for (ItemPedidoDTO itemDTO : dto.itens()) {
-            ItemPedido item = new ItemPedido();
-            item.setValor(itemDTO.valor());
-            item.setQuantidade(itemDTO.quantidade());
-            item.setPedido(pedido);
             Produto produto = produtoRepository.findById(itemDTO.idProduto());
             if (produto == null) {
                 throw new IllegalArgumentException("Não existe esse produto!");
             }
+
+            ItemPedido item = new ItemPedido();
+            item.setValor(produto.getValor());
+            item.setQuantidade(itemDTO.quantidade());
+            item.setPedido(pedido);
             item.setProduto(produto);
 
             // atualizado o estoque
             produto.setQuantEstoque(produto.getQuantEstoque() - item.getQuantidade());
 
-            pedido.getItens().add(item);
-        }
-        
-        Endereco endereco = enderecoRepository.findById(dto.idEndereco());
-        pedido.setEndereco(endereco);
+            itensPedido.add(item);
 
-        pedido.setCliente((Cliente) clienteRepository.findByLogin(login));
+            total += (produto.getValor() * itemDTO.quantidade());
+        }
+
+        pedido.setValorTotal(total);
+        pedido.setItens(itensPedido);
+
+        Cliente cliente = clienteRepository.findByLogin(login);
+        if (cliente == null) {
+            pedido.setCliente(null);
+        }
+        pedido.setCliente(cliente);
 
         pedidoRepository.persist(pedido);
 
@@ -136,5 +138,14 @@ public class PedidoServiceImpl implements PedidoService {
         return itens.stream()
                 .map(i -> ItemPedidoResponseDTO.valueOf(i))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<PedidoResponseDTO> findAllPedidosByClienteId(Long clienteId) {
+        Cliente cliente = clienteRepository.findById(clienteId);
+        List<Pedido> pedidos = pedidoRepository.findByUsuario(cliente);
+        
+        return pedidos.stream().map(PedidoResponseDTO::valueOf).collect(Collectors.toList());
     }
 }

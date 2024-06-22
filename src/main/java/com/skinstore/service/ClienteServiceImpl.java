@@ -225,7 +225,16 @@ public class ClienteServiceImpl implements ClienteService {
         // Log de sucesso
         LOG.info("Login bem-sucedido para o cliente com login: " + login);
     
-        return UsuarioResponseDTO.valueOf(cliente.getPessoa());
+        return UsuarioResponseDTO.valueOf(cliente.getPessoa().getUsuario());
+    }
+
+    @Override
+    public ClienteResponseDTO findByLogin(String login) {
+        Cliente cliente = repository.findByLogin(login);
+        if (cliente == null) {
+            throw new EntityNotFoundException("Cliente não encontrado com login: " + login);
+        }
+        return ClienteResponseDTO.valueOf(cliente);
     }
 
 }

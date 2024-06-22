@@ -8,6 +8,7 @@ import com.skinstore.resource.AdministradorResource;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.NoResultException;
 
 @ApplicationScoped
 public class AdministradorRepository implements PanacheRepository<Administrador> {
@@ -23,6 +24,16 @@ public class AdministradorRepository implements PanacheRepository<Administrador>
         LOG.info("Procurando administrador com login: " + login + " e senha fornecida");
         
         return find("pessoa.usuario.login = ?1 AND pessoa.usuario.senha = ?2", login, senha).firstResult();
+    }
+
+    public Administrador findByLogin(String login) {
+        try {
+            return find("pessoa.usuario.login = ?1 ", login).singleResult();
+        } catch (NoResultException e) {
+            e.printStackTrace();
+            return null;
+        }
+        
     }
 }
 

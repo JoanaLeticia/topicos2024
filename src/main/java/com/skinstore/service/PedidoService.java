@@ -15,4 +15,5 @@ public interface PedidoService {
     public List<PedidoResponseDTO> findByAll(String login);
     public List<PedidoResponseDTO> pedidosUsuarioLogado(Cliente cliente);
     public List<ItemPedidoResponseDTO> findItensByUsuario(Cliente cliente);
+    public List<PedidoResponseDTO> findAllPedidosByClienteId(Long clienteId);
 }

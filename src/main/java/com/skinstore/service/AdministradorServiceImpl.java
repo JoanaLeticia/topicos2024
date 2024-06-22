@@ -141,7 +141,7 @@ public class AdministradorServiceImpl implements AdministradorService {
         // Log de sucesso
         LOG.info("Login bem-sucedido para o administrador com login: " + login);
     
-        return UsuarioResponseDTO.valueOf(adm.getPessoa());
+        return UsuarioResponseDTO.valueOf(adm.getPessoa().getUsuario());
     }
     
 }

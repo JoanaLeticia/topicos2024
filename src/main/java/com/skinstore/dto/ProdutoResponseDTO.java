@@ -1,7 +1,5 @@
 package com.skinstore.dto;
 
-import java.math.BigDecimal;
-
 import com.skinstore.model.Arma;
 import com.skinstore.model.Disponibilidade;
 import com.skinstore.model.Exterior;
@@ -12,7 +10,7 @@ public record ProdutoResponseDTO(
     Long id,
     String nome,
     String linkSteam,
-    BigDecimal valor,
+    Double valor,
     Integer quantEstoque,
     Tipo tipo,
     Arma arma,
