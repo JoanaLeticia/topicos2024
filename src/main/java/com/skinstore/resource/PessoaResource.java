@@ -142,17 +142,17 @@ public class PessoaResource {
 
     @PATCH
     @Transactional
-    @Path("/updateCPF/{cpf}")
-    @RolesAllowed({"Admin"})
-    public Response updateCPF(@PathParam("cpf") String cpf) {
+    @Path("/updatecpf/{cpf}")
+    @RolesAllowed({ "Cliente", "Admin" })
+    public Response updateCpf(@PathParam("cpf") String cpf) {
         String login = jwt.getSubject();
         try {
             service.updateCPF(login, cpf);
-            LOG.info("CPF atualizado!");
-            return Response.ok("Informações da pessoa atualizadas com sucesso").build();
+            LOG.info("Cpf atualizada!");
+            return Response.ok("Informações do usuário atualizadas com sucesso").build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Erro ao atualizar informações da pessoa: " + e.getMessage())
+                    .entity("Erro ao atualizar informações do usuário: " + e.getMessage())
                     .build();
         }
     }

@@ -17,7 +17,7 @@ public class CartaoCredito extends DefaultEntity {
     private String codigoSeguranca;
 
     private LocalDate dataVencimento;
-    
+
     private Integer quantidadeParcelas;
 
     public String getBandeira() {

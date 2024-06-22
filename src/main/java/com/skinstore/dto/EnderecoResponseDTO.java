@@ -4,6 +4,7 @@ import com.skinstore.model.Endereco;
 
 public record EnderecoResponseDTO(
         Long id,
+        String logradouro,
         String numero,
         String complemento,
         String cep,
@@ -11,6 +12,7 @@ public record EnderecoResponseDTO(
     public static EnderecoResponseDTO valueOf(Endereco endereco) {
         return new EnderecoResponseDTO(
                 endereco.getId(),
+                endereco.getLogradouro(),
                 endereco.getNumero(),
                 endereco.getComplemento(),
                 endereco.getCep(),

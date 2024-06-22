@@ -34,6 +34,7 @@ public class CidadeResource {
     private static final Logger LOG = Logger.getLogger(CidadeResource.class);
 
     @POST
+    @Transactional
     @RolesAllowed({"Admin"})
     public Response insert(CidadeDTO dto) throws Exception {
         LOG.debug("Debug de inserção de Cidade.");

@@ -8,6 +8,8 @@ import com.skinstore.model.Pessoa;
 import com.skinstore.model.Usuario;
 import com.skinstore.repository.PedidoRepository;
 import com.skinstore.repository.PessoaRepository;
+import com.skinstore.repository.UsuarioRepository;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -21,6 +23,9 @@ public class PessoaServiceImpl implements PessoaService {
     @Inject
     PedidoRepository pedidoRepository;
 
+    @Inject
+    UsuarioRepository usuarioRepository;
+
     @Override
     @Transactional
     public PessoaResponseDTO insert(@Valid PessoaDTO dto) {
@@ -29,9 +34,12 @@ public class PessoaServiceImpl implements PessoaService {
         usuario.setLogin(dto.email());
         usuario.setSenha(dto.senha());
 
+        usuarioRepository.persist(usuario);
+
         Pessoa pessoa = new Pessoa();
         pessoa.setCpf(dto.cpf());
         pessoa.setNome(dto.nome());
+        pessoa.setUsuario(usuario);
 
         repository.persist(pessoa);
         return PessoaResponseDTO.valueOf(pessoa);
