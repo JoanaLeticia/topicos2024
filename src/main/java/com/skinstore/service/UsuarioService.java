@@ -1,6 +1,5 @@
 package com.skinstore.service;
 
-import java.util.Date;
 import java.util.List;
 
 import com.skinstore.dto.UsuarioDTO;
@@ -31,6 +30,4 @@ public interface UsuarioService {
     public UsuarioResponseDTO updateNome( String login, String nome);
 
     public UsuarioResponseDTO updateMatricula(String login, Integer novaMatricula);
-
-    public UsuarioResponseDTO updateDataNasc(String login, Date novaDataNasc);
 }

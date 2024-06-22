@@ -1,6 +1,5 @@
 package com.skinstore.service;
 
-import java.util.Date;
 import java.util.List;
 import com.skinstore.dto.UsuarioDTO;
 import com.skinstore.dto.UsuarioResponseDTO;
@@ -158,20 +157,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         administradorRepository.persist(adm);
 
         return UsuarioResponseDTO.valueOf(adm.getPessoa().getUsuario());
-    }
-
-    @Override
-    @Transactional
-    public UsuarioResponseDTO updateDataNasc(String login, Date novaDataNascimento) {
-        Cliente cliente = clienteRepository.findByLogin(login);
-        if (cliente == null) {
-            throw new IllegalArgumentException("Cliente não encontrado para o login: " + login);
-        }
-
-        cliente.setDataNascimento(novaDataNascimento);
-        clienteRepository.persist(cliente);
-
-        return UsuarioResponseDTO.valueOf(cliente.getPessoa().getUsuario());
     }
 
 }

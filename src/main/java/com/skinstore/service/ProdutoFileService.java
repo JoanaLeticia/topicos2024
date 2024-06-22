@@ -4,84 +4,80 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import org.jboss.logging.Logger;
-
-import com.skinstore.resource.ClienteResource;
+import com.skinstore.model.Produto;
+import com.skinstore.repository.ProdutoRepository;
+import com.skinstore.validation.ValidationException;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class ProdutoFileService implements FileService {
-    private static final Logger LOG = Logger.getLogger(ClienteResource.class);
-    /*  /Users/janio/quarkus/images/usuario/
-    private final String PATH_USER = System.getProperty("user.home") +
-        File.separator + "quarkus" +
-        File.separator + "images" +
-        File.separator + "usuario" +  File.separator; */
+    private final String PATH_USER = "src/main/resources/imagens/produtos/";
 
-    private final String PATH_USER = "src/main/resources/imagens/produto";
-    
-    private static final List<String> SUPPORTED_MIME_TYPES = 
-        Arrays.asList("image/jpeg", "image/jpg", "image/png", "image/gif");
-
-    private static final int MAX_FILE_SIZE = 1024 * 1024 * 10; // 10mb 
+    @Inject
+    ProdutoRepository produtoRepository;
 
     @Override
-    public String salvar(String nomeArquivo, byte[] arquivo) throws IOException {
-        verificarTamanhoImagem(arquivo);
+    @Transactional
+    public void salvar(Long id, String nomeImagem, byte[] imagem) {
+        Produto produto = produtoRepository.findById(id);
+        try {
+            produto.setNomeImagem(salvarImagem(nomeImagem, imagem));
+        } catch (IOException e) {
+            throw new ValidationException("imagem", e.getMessage());
+        }
+    }
 
-        verificarTipoImagem(nomeArquivo);
-
-        // criar diretorio caso nao exista
-        Path diretorio = Paths.get(PATH_USER);
-        Files.createDirectories(diretorio);
-
-        // criando o nome do arquivo randomico
-        String mimeType = Files.probeContentType(Paths.get(nomeArquivo));
-        String extensao = mimeType.substring(mimeType.lastIndexOf('/') + 1);
-        String novoNomeArquivo = UUID.randomUUID() + "." + extensao;
-
-        // defindo o caminho completo do arquivo
-        Path filePath = diretorio.resolve(novoNomeArquivo);
-
-        if (filePath.toFile().exists()) 
-            throw new IOException("Nome de arquivo ja existe. Os alunos vão buscar uma melhor solucao.");
-
-        // salvar arquivo
-        try (FileOutputStream fos = new FileOutputStream(filePath.toFile())) {
-            fos.write(arquivo);
+    private String salvarImagem(String nomeImagem, byte[] imagem) throws IOException {
+        // Verificar o tipo da imagem
+        String mimeType = Files.probeContentType(new File(nomeImagem).toPath());
+        List<String> listMimeType = Arrays.asList("image/jpg", "image/gif", "image/png", "image/jpeg");
+        if (!listMimeType.contains(mimeType)) {
+            throw new IOException("Tipo de imagem não suportado.");
         }
 
-        return filePath.toFile().getName();
+        // Verificar o tamanho do arquivo - não permitir maior que 10mb
+        if (imagem.length > 1024 * 1024 * 10) {
+            throw new IOException("Arquivo muito grande, tamanho máximo 10mb.");
+        }
+
+        // Criar pasta quando não existir
+        File diretorio = new File(PATH_USER);
+        if (!diretorio.exists()) {
+            diretorio.mkdirs();
+        }
+
+        // Gerar nome do arquivo
+        String nomeArquivo = UUID.randomUUID() 
+                                + "." 
+                                + mimeType.substring(mimeType.lastIndexOf("/") + 1);
+        String path = PATH_USER + nomeArquivo;
+
+        // Salvar o arquivo
+        File file = new File(path);
+        if (file.exists()) {
+            throw new IOException("Este arquivo já existe. Programador, você deve melhorar esse código");
+        }
+
+        // Criar o arquivo no SO
+        file.createNewFile();
+
+        FileOutputStream fos = new FileOutputStream(file);
+        fos.write(imagem);
+        fos.flush();
+        fos.close();
+
+        return nomeArquivo;
     }
 
     @Override
-    public File obter(String nomeArquivo) {
-        File file = new File(PATH_USER+nomeArquivo);
-        return file;
+    public File download(String nomeImagem) {
+        return new File(PATH_USER + nomeImagem);
     }
-
-    private void verificarTamanhoImagem(byte[] arquivo) throws IOException {
-        if (arquivo.length > MAX_FILE_SIZE) 
-            throw new IOException("Arquivo maior que 10mb.");
-    }
-
-     private void verificarTipoImagem(String nomeArquivo) throws IOException {
-        LOG.info("Nome do Arquivo: " + nomeArquivo);
-        String mimeType = Files.probeContentType(Paths.get(nomeArquivo));
-        LOG.info("Tipo MIME: " + mimeType);
-
-        if (!SUPPORTED_MIME_TYPES.contains(mimeType)) 
-            throw new IOException("Tipo de imagem não suportada.");
-  
-    }
-    
-
-
 }

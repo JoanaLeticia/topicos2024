@@ -1,7 +1,5 @@
 package com.skinstore.resource;
 
-import java.io.IOException;
-
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
@@ -29,6 +27,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 import jakarta.ws.rs.core.Response.Status;
 
 @Path("/produtos")
@@ -42,7 +41,7 @@ public class ProdutoResource {
     JsonWebToken jwt;
 
     @Inject
-    ProdutoFileService fileService;
+    public ProdutoFileService fileService;
 
     private static final Logger LOG = Logger.getLogger(ProdutoResource.class);
 
@@ -133,16 +132,18 @@ public class ProdutoResource {
     // Imagens:
 
     @PATCH
-    @Path("/upload/imagem/{id}")
-    @RolesAllowed({"Admin"})
+    @Path("/{id}/image/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response salvarImagem(@MultipartForm ProdutoImageForm form, @PathParam("id") Long id) throws IOException {
-        String nomeImagem;
-        nomeImagem = fileService.salvar(form.getNomeImagem(), form.getImagem());
-        ProdutoResponseDTO imagemCAPA = service.findById(id);
-        imagemCAPA = service.updateNomeImagem(imagemCAPA.id(), nomeImagem);
-
-        return Response.ok(imagemCAPA).build();
-
+    public Response upload(@PathParam("id") Long id, @MultipartForm ProdutoImageForm form) {
+        fileService.salvar(id, form.getNomeImagem(), form.getImagem());
+        return Response.noContent().build();
     }
+
+    @GET
+    @Path("/image/download/{nomeImagem}")
+    public Response download(@PathParam("nomeImagem") String nomeImagem) {
+        ResponseBuilder response = Response.ok(fileService.download(nomeImagem));
+        response.header("Content-Disposition", "attachment;filename=" + nomeImagem);
+        return response.build();
+    } 
 }

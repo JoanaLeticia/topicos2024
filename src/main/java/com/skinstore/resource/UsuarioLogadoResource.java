@@ -1,6 +1,5 @@
 package com.skinstore.resource;
 
-import java.util.Date;
 import java.util.List;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -112,23 +111,6 @@ public class UsuarioLogadoResource {
         try {
             usuarioService.updateMatricula(login, matricula);
             LOG.info("Matricula atualizado!");
-            return Response.ok("Informações do usuário atualizadas com sucesso").build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Erro ao atualizar informações do usuário: " + e.getMessage())
-                    .build();
-        }
-    }
-
-    @PATCH
-    @Transactional
-    @Path("/updateDataNascimento/{dataNasc}")
-    @RolesAllowed({ "Cliente" })
-    public Response updateDataNasc(@PathParam("dataNasc") Date dataNasc) {
-        String login = jwt.getSubject();
-        try {
-            usuarioService.updateDataNasc(login, dataNasc);
-            LOG.info("Data de nascimento atualizada!");
             return Response.ok("Informações do usuário atualizadas com sucesso").build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)

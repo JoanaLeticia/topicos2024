@@ -5,7 +5,9 @@ import org.jboss.resteasy.annotations.providers.multipart.PartType;
 import jakarta.ws.rs.FormParam;
 
 public class ProdutoImageForm {
+
     @FormParam("nomeImagem")
+    @PartType("text/plain")
     private String nomeImagem;
 
     @FormParam("imagem")
